@@ -20,11 +20,11 @@ import requests, zipfile, io, os
 
 def crawler(dirPath, link_list):
 	
-	if os.path.isdir(dirPath) == false: # Verifica se o diretório inda não foi criado
+	if os.path.isdir(dirPath) == False: # Verifica se o diretório inda não foi criado
 		os.mkdir(dirPath) # Caso não exista, cria o diretório
 
 	for link in link_list:
-		if os.path.isdir(dirPath + '/' + link.split('/').pop().replace('.zip', '')) == false:  # verifica se o arquivo ainda não foi baixado
+		if os.path.isdir(dirPath + '/' + link.split('/').pop().replace('.zip', '')) == False:  # verifica se o arquivo ainda não foi baixado
 			r = requests.get(link, stream=True) # Caso não tenha sido baixado, baixa o arquivo
 			z = zipfile.ZipFile(io.BytesIO(r.content)) # Extrai o arquivo
 			z.extractall(dirPath) # salva no diretório de treinamento
@@ -36,10 +36,11 @@ val = 'faceid_val'
 
 
 # Dados de treinamento
-crawler(train, ["http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(151751).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(153054).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(154211).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(160440).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(160931).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(161342).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(163349).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(164248).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(141550).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(142154).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(142457).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(143016).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(132824).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(133201).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(133846).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(134239).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(134757).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(140516).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(143345).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(144316).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(145150).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(145623).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(150303).zip",          "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(150650).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(151337).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(151650).zip"])
+crawler(train, ["http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(151751).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(153054).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(154211).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(160440).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(160931).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(161342).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(163349).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(164248).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(141550).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(142154).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(142457).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(143016).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(132824).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(133201).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(133846).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(134239).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(134757).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(140516).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(143345).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(144316).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(145150).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(145623).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(150303).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(150650).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(151337).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(151650).zip"])
 # Dados de validação
 crawler(val, ["http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(152717).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(153532).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(154129).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(154728).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(155357).zip"])
 
+print("ok")
 
 
 '''
@@ -95,13 +96,14 @@ def create_couple(file_path):
 	while folder == "datalab": 
 		folder = np.random.choice(glob.glob(file_path + "*"))
 
-	# print(folder)
+	print('Folder: ')
+	print(folder)
 
 	mat_small = [0, 0]
 
 	for index in range(len(mat_small)):
 
-		mat_small[intdex] = bitMatrix(folder)['mat_small']
+		mat_small[index] = bitMatrix(folder)['mat_small']
 
 	# plt.imshow(mat_small)
 	# plt.show()
@@ -133,7 +135,7 @@ def create_couple_rgbd(file_path):
 		if (index == 0):
 			img = img[140:340, 220:420] # recorta a matriz, com margens horizontais de 140 células e margens verticais de 220 células
 		else:
-			img = img2[160:360, 240:440] # recorta a matriz, com margens horizontais de (160, 122) células e margens verticais de (240, 200) células
+			img = img[160:360, 240:440] # recorta a matriz, com margens horizontais de (160, 122) células e margens verticais de (240, 200) células
 
 
 		# plt.imshow(mat_small)
@@ -161,7 +163,7 @@ def create_wrong(file_path):
 		while folder == "datalab": 
 			folder = np.random.choice(glob.glob(file_path + "*"))
 
-		mat_small[intdex] = bitMatrix(folder)['mat_small']
+		mat_small[index] = bitMatrix(folder)['mat_small']
 
 	# plt.imshow(mat_small)
 	# plt.show()
