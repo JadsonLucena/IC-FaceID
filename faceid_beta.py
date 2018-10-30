@@ -53,9 +53,9 @@ import matplotlib.pyplot as plt
 from PIL import Image
 
 
-def matrix(folder):
+def bitMatrix(folder):
 
-	mat = np.zeros((480, 640), dtype = 'float32') # Cria uma matrix de zeros
+	mat = np.zeros((480, 640), dtype = 'float32') # Cria uma matriz de zeros
 	i = 0
 	j = 0
 	depth_file = np.random.choice(glob.glob(folder + "/*.dat")) # Pega um arquivo.dat aleatoriamente
@@ -83,17 +83,15 @@ def matrix(folder):
 
 		mat = np.asarray(mat)
 
-	mat_small = mat[140:340, 220:420] # recorta a matrix, com margens horizontais de 140 células e margens verticais de 220 células
+	mat_small = mat[140:340, 220:420] # recorta a matriz, com margens horizontais de 140 células e margens verticais de 220 células
 	mat_small = (mat_small - np.mean(mat_small)) / np.max(mat_small) # calcula o erro
 
 	return {'mat_small' : mat_small, 'depth_file' : depth_file}
 
 
-# SVM
 def create_couple(file_path):
 
 	folder = np.random.choice(glob.glob(file_path + "*")) # Pega um dos arquivos aleatoriamente
-
 	while folder == "datalab": 
 		folder = np.random.choice(glob.glob(file_path + "*"))
 
@@ -103,7 +101,7 @@ def create_couple(file_path):
 
 	for index in range(len(mat_small)):
 
-		mat_small[intdex] = matrix(folder)['mat_small']
+		mat_small[intdex] = bitMatrix(folder)['mat_small']
 
 	# plt.imshow(mat_small)
 	# plt.show()
@@ -114,11 +112,9 @@ def create_couple(file_path):
 print(create_couple(train + '/'))
 
 
-# SVM
 def create_couple_rgbd(file_path):
 
 	folder = np.random.choice(glob.glob(file_path + "*"))  # Pega um dos arquivos aleatoriamente
-
 	while folder == "datalab":
 		folder = np.random.choice(glob.glob(file_path + "*"))
 
@@ -128,16 +124,16 @@ def create_couple_rgbd(file_path):
 
 	for index in range(len(full)):
 
-		mat = matrix(folder)
+		mat = bitMatrix(folder)
 
 		img = Image.open(mat['depth_file'][:-5] + "c.bmp") # cria uma imagem .bmp
 		img.thumbnail((640, 480))
 		img = np.asarray(img)
 
 		if (index == 0):
-			img = img[140:340, 220:420] # recorta a matrix, com margens horizontais de 140 células e margens verticais de 220 células
+			img = img[140:340, 220:420] # recorta a matriz, com margens horizontais de 140 células e margens verticais de 220 células
 		else:
-			img = img2[160:360, 240:440] # recorta a matrix, com margens horizontais de (160, 122) células e margens verticais de (240, 200) células
+			img = img2[160:360, 240:440] # recorta a matriz, com margens horizontais de (160, 122) células e margens verticais de (240, 200) células
 
 
 		# plt.imshow(mat_small)
@@ -145,7 +141,7 @@ def create_couple_rgbd(file_path):
 		# plt.imshow(img)
 		# plt.show()
 
-		full[index] = np.zeros((200, 200, 4)) # Cria uma matrix de zeros com 4 dimensões
+		full[index] = np.zeros((200, 200, 4)) # Cria uma matriz de zeros com 4 dimensões
 		full[index][:, :, :3] = img[:, :, :3] # Insere valores até a terceira dimensão
 		full[index][: , :, 3] = mat['mat_small'] # Insere valores na quarta dimensão
 
@@ -156,7 +152,21 @@ create_couple_rgbd(val + '/')
 
 
 def create_wrong(file_path):
-	return create_couple(file_path)
+
+	mat_small = [0, 0]
+
+	for index in range(len(mat_small)):
+
+		folder = np.random.choice(glob.glob(file_path + "*")) # Pega um dos arquivos aleatoriamente
+		while folder == "datalab": 
+			folder = np.random.choice(glob.glob(file_path + "*"))
+
+		mat_small[intdex] = bitMatrix(folder)['mat_small']
+
+	# plt.imshow(mat_small)
+	# plt.show()
+
+	return np.array(mat_small)
 
 
 create_wrong(train + '/')
@@ -165,30 +175,29 @@ create_wrong(train + '/')
 
 def create_wrong_rgbd(file_path):
 
-	folder = np.random.choice(glob.glob(file_path + "*"))  # Pega um dos arquivos aleatoriamente
-
-	while folder == "datalab":
-		folder = np.random.choice(glob.glob(file_path + "*"))
-
-	# print(folder)
-
 	full = [0, 0]
 
 	for index in range(len(full)):
 
-		mat = matrix(folder)
+		folder = np.random.choice(glob.glob(file_path + "*"))  # Pega um dos arquivos aleatoriamente
+		while folder == "datalab":
+			folder = np.random.choice(glob.glob(file_path + "*"))
+
+		# print(folder)
+
+		mat = bitMatrix(folder)
 
 		img = Image.open(mat['depth_file'][:-5] + "c.bmp") # cria uma imagem .bmp
 		img.thumbnail((640, 480))
 		img = np.asarray(img)
-		img = img[140:340, 220:420] # recorta a matrix, com margens horizontais de 140 células e margens verticais de 220 células
+		img = img[140:340, 220:420] # recorta a matriz, com margens horizontais de 140 células e margens verticais de 220 células
 
 		# plt.imshow(mat_small)
 		# plt.show()
 		# plt.imshow(img)
 		# plt.show()
 
-		full[index] = np.zeros((200, 200, 4)) # Cria uma matrix de zeros com 4 dimensões
+		full[index] = np.zeros((200, 200, 4)) # Cria uma matriz de zeros com 4 dimensões
 		full[index][:, :, :3] = img[:, :, :3] # Insere valores até a terceira dimensão
 		full[index][: , :, 3] = mat['mat_small'] # Insere valores na quarta dimensão
 
@@ -241,6 +250,9 @@ def fire(x, squeeze=16, expand=64):
 
     return x
 
+
+
+
 img_input = Input(shape=(200,200,4))
 
 x = Convolution2D(64, (5, 5), strides=(2, 2), padding='valid')(img_input)
@@ -276,7 +288,7 @@ x = Convolution2D(512, (1, 1), padding='same')(x)
 out = Activation('relu')(x)
 
 
-modelsqueeze= Model(img_input, out)
+modelsqueeze = Model(img_input, out)
 
 modelsqueeze.summary()
 
@@ -304,19 +316,19 @@ x1 = Dropout(0.4)(x1)
 
 x1 = Flatten()(x1)
 
-x1 = Dense(512, activation="relu")(x1)
+x1 = Dense(512, activation = "relu")(x1)
 x1 = Dropout(0.2)(x1)
 #x1 = BatchNormalization()(x1)
-feat_x = Dense(128, activation="linear")(x1)
-feat_x = Lambda(lambda  x: K.l2_normalize(x,axis=1))(feat_x)
+feat_x = Dense(128, activation = "linear")(x1)
+feat_x = Lambda(lambda  x: K.l2_normalize(x, axis=1))(feat_x)
 
 
 model_top = Model(inputs = [im_in], outputs = feat_x)
 
 model_top.summary()
 
-im_in1 = Input(shape=(200,200,4))
-im_in2 = Input(shape=(200,200,4))
+im_in1 = Input(shape = (200,200,4))
+im_in2 = Input(shape = (200,200,4))
 
 feat_x1 = model_top(im_in1)
 feat_x2 = model_top(im_in2)
@@ -329,65 +341,52 @@ model_final = Model(inputs = [im_in1, im_in2], outputs = lambda_merge)
 
 model_final.summary()
 
-adam = Adam(lr=0.001)
+adam = Adam(lr = 0.001)
 
-sgd = SGD(lr=0.001, momentum=0.9)
+sgd = SGD(lr = 0.001, momentum = 0.9)
 
-model_final.compile(optimizer=adam, loss=contrastive_loss)
+model_final.compile(optimizer = adam, loss = contrastive_loss)
 
 """# Learning phase.
 We write the generators that will give our model batches of data to train on, then we run the training.
 """
 
-def generator(batch_size):
-  
-  while 1:
-    X=[]
-    y=[]
-    switch=True
-    for _ in range(batch_size):
-   #   switch += 1
-      if switch:
-     #   print("correct")
-        X.append(create_couple_rgbd(train + '/').reshape((2,200,200,4)))
-        y.append(np.array([0.]))
-      else:
-     #   print("wrong")
-        X.append(create_wrong_rgbd(train + '/').reshape((2,200,200,4)))
-        y.append(np.array([1.]))
-      switch=not switch
-    X = np.asarray(X)
-    y = np.asarray(y)
-    XX1=X[0,:]
-    XX2=X[1,:]
-    yield [X[:,0],X[:,1]],y
+def generator(batch_size, file_path):
 
-def val_generator(batch_size):
-  
-  while 1:
-    X=[]
-    y=[]
-    switch=True
-    for _ in range(batch_size):
-      if switch:
-        X.append(create_couple_rgbd(val + '/').reshape((2,200,200,4)))
-        y.append(np.array([0.]))
-      else:
-        X.append(create_wrong_rgbd(val + '/').reshape((2,200,200,4)))
-        y.append(np.array([1.]))
-      switch=not switch
-    X = np.asarray(X)
-    y = np.asarray(y)
-    XX1=X[0,:]
-    XX2=X[1,:]
-    yield [X[:,0],X[:,1]],y
+	while 1:
+		
+		X=[]
+		y=[]
+		switch = True
+		
+		for _ in range(batch_size):
+			# switch += 1
+			if switch:
+				# print("correct")
+				X.append(create_couple_rgbd(file_path + '/').reshape((2,200,200,4)))
+				y.append(np.array([0.]))
+			else:
+				# print("wrong")
+				X.append(create_wrong_rgbd(file_path + '/').reshape((2,200,200,4)))
+				y.append(np.array([1.]))
+			
+			switch = not switch
 
-gen = generator(16)
-val_gen = val_generator(4)
+		X = np.asarray(X)
+		y = np.asarray(y)
+		
+		XX1 = X[0,:]
+		XX2 = X[1,:]
 
-outputs = model_final.fit_generator(gen, steps_per_epoch=30, epochs=50, validation_data = val_gen, validation_steps=20)
+		yield [X[:,0],X[:,1]],y
 
-"""# Some model tests."""
+
+train_gen = generator(16, train)
+val_gen = generator(4, val)
+
+outputs = model_final.fit_generator(train_gen, steps_per_epoch = 30, epochs = 50, validation_data = val_gen, validation_steps = 20)
+
+''' Alguns testes de modelo '''
 
 cop = create_couple(val + '/')
 model_final.evaluate([cop[0].reshape((1,200,200,4)), cop[1].reshape((1,200,200,4))], np.array([0.]))
@@ -395,9 +394,20 @@ model_final.evaluate([cop[0].reshape((1,200,200,4)), cop[1].reshape((1,200,200,4
 cop = create_wrong_rgbd(val + '/')
 model_final.predict([cop[0].reshape((1,200,200,4)), cop[1].reshape((1,200,200,4))])
 
-"""# Saving and loading the model.
-The next cells show both how to save the model weights and upload them into your Drive, and then how to retrieve those weights from the Drive to load a pre-trained model.
-"""
+
+
+
+
+
+
+
+
+
+
+'''
+Salvando e carregando o modelo
+As próximas células mostram como salvar as ponderações do modelo e enviá-las para o seu Drive e, em seguida, como recuperar esses pesos do Drive para carregar um modelo pré-treinado.
+'''
 
 model_final.save("faceid_big_rgbd_2.h5")
 
@@ -476,49 +486,49 @@ cop = create_couple_rgbd(val + '/')
 model_output.predict(cop[0].reshape((1,200,200,4)))
 
 def create_input_rgbd(file_path):
-  #  print(folder)
-    mat=np.zeros((480,640), dtype='float32')
-    i=0
-    j=0
-    depth_file = file_path
-    with open(depth_file) as file:
-        for line in file:
-            vals = line.split('\t')
-            for val in vals:
-                if val == "\n": continue    
-                if int(val) > 1200 or int(val) == -1: val= 1200
-                mat[i][j]=float(int(val))
-                j+=1
-                j=j%640
+	# print(folder)
+	mat=np.zeros((480,640), dtype='float32')
+	i=0
+	j=0
+	depth_file = file_path
+	with open(depth_file) as file:
+		for line in file:
+			vals = line.split('\t')
+			for val in vals:
+				if val == "\n": continue    
+				if int(val) > 1200 or int(val) == -1: val= 1200
+				mat[i][j]=float(int(val))
+				j+=1
+				j=j%640
 
-            i+=1
-        mat = np.asarray(mat)
-    mat_small=mat[140:340,220:420]
-    img = Image.open(depth_file[:-5] + "c.bmp")
-    img.thumbnail((640,480))
-    img = np.asarray(img)
-    img = img[140:340,220:420]
-    mat_small=(mat_small-np.mean(mat_small))/np.max(mat_small)
-    plt.figure(figsize=(8,8))
-    plt.grid(True)
-    plt.xticks([])
-    plt.yticks([])
-    plt.imshow(mat_small)
-    plt.show()
-    plt.figure(figsize=(8,8))
-    plt.grid(True)
-    plt.xticks([])
-    plt.yticks([])
-    plt.imshow(img)
-    plt.show()
-    
-    
-    
-    full1 = np.zeros((200,200,4))
-    full1[:,:,:3] = img[:,:,:3]
-    full1[:,:,3] = mat_small
-    
-    return np.array([full1])
+			i+=1
+		mat = np.asarray(mat)
+	mat_small=mat[140:340,220:420]
+	img = Image.open(depth_file[:-5] + "c.bmp")
+	img.thumbnail((640,480))
+	img = np.asarray(img)
+	img = img[140:340,220:420]
+	mat_small=(mat_small-np.mean(mat_small))/np.max(mat_small)
+	plt.figure(figsize=(8,8))
+	plt.grid(True)
+	plt.xticks([])
+	plt.yticks([])
+	plt.imshow(mat_small)
+	plt.show()
+	plt.figure(figsize=(8,8))
+	plt.grid(True)
+	plt.xticks([])
+	plt.yticks([])
+	plt.imshow(img)
+	plt.show()
+
+
+
+	full1 = np.zeros((200,200,4))
+	full1[:,:,:3] = img[:,:,:3]
+	full1[:,:,3] = mat_small
+
+	return np.array([full1])
 
 """# Data visualization.
 Here we store the embeddings for all the faces in the dataset. Then, using both **t-SNE** and **PCA**, we visualize the embeddings going from 128 to 2 dimensions.
@@ -527,16 +537,21 @@ Here we store the embeddings for all the faces in the dataset. Then, using both 
 outputs=[]
 n=0
 for folder in glob.glob(train + '/*'):
-  i=0
-  for file in glob.glob(folder + '/*.dat'):
-    i+=1
-    outputs.append(model_output.predict(create_input_rgbd(file).reshape((1,200,200,4))))
-  print(i)
-  n+=1
-  print("Folder ", n, " of ", len(glob.glob(train + '/*')))
+	
+	i=0
+	
+	for file in glob.glob(folder + '/*.dat'):
+		i+=1
+		outputs.append(model_output.predict(create_input_rgbd(file).reshape((1,200,200,4))))
+	
+	print(i)
+	n+=1
+	print("Folder ", n, " of ", len(glob.glob(train + '/*')))
+
 print(len(outputs))
 
-outputs= np.asarray(outputs)
+
+outputs = np.asarray(outputs)
 outputs = outputs.reshape((-1,128))
 outputs.shape
 
@@ -559,11 +574,13 @@ import matplotlib.pyplot as plt
 
 color = 0
 for i in range(len((X_embedded))):
-  el = X_embedded[i]
-  if i % 51 == 0 and not i==0:
-    color+=1
-    color=color%10
-  plt.scatter(el[0], el[1], color="C" + str(color))
+	
+	el = X_embedded[i]
+	
+	if i % 51 == 0 and not i==0:
+		color+=1
+		color=color%10
+	plt.scatter(el[0], el[1], color="C" + str(color))
 
 """# Distance between two arbitrary RGBD pictures."""
 
