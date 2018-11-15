@@ -9,3 +9,4 @@ Este projeto de iniciação científica objetiva investigar abordagens baseadas 
 - TensorFlow
 - Keras
 - MatPlotLib
+- sklearn
