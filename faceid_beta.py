@@ -9,9 +9,16 @@ Made by [Norman Di Palo](https://medium.com/@normandipalo), March 2018.
 """
 
 
-# https://keras.io/
-import keras
 
+'''
+Treinando a Rede Siamesa:
+
+1 - Passe a primeira imagem do par de imagens pela rede.
+2 - Passe a segunda imagem do par de imagens pela rede.
+3 - Calcule a perda usando as saídas de 1 e 2.
+4 - Volte a propagar a perda, para calcular os gradientes.
+5 - Atualize os pesos usando um otimizador. Nós usaremos Adam para este exemplo.
+'''
 
 
 
@@ -31,16 +38,15 @@ def crawler(dirPath, link_list):
 
 
 
-train = 'faceid_train'
-val = 'faceid_val'
+dir_train = 'faceid_train'
+dir_val = 'faceid_val'
+dir_model = 'model'
 
 
 # Dados de treinamento
-crawler(train, ["http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(151751).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(153054).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(154211).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(160440).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(160931).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(161342).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(163349).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(164248).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(141550).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(142154).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(142457).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(143016).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(132824).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(133201).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(133846).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(134239).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(134757).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(140516).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(143345).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(144316).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(145150).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(145623).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(150303).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(150650).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(151337).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(151650).zip"])
+crawler(dir_train, ["http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(151751).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(153054).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(154211).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(160440).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(160931).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(161342).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(163349).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(164248).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(141550).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(142154).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(142457).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(143016).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(132824).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(133201).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(133846).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(134239).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(134757).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(140516).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(143345).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(144316).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(145150).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(145623).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(150303).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(150650).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(151337).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(151650).zip"])
 # Dados de validação
-crawler(val, ["http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(152717).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(153532).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(154129).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(154728).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(155357).zip"])
-
-print("ok")
+crawler(dir_val, ["http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(152717).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(153532).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(154129).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(154728).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(155357).zip"])
 
 
 '''
@@ -54,7 +60,10 @@ import matplotlib.pyplot as plt
 from PIL import Image
 
 
-def bitMatrix(folder):
+def pixelMatrix(folder):
+
+	# print('Folder: ')
+	# print(folder)
 
 	mat = np.zeros((480, 640), dtype = 'float32') # Cria uma matriz de zeros
 	i = 0
@@ -65,17 +74,17 @@ def bitMatrix(folder):
 
 		for line in file:
 
-			vals = line.split('\t')
+			values = line.split('\t')
 
-			for val in vals:
+			for value in values:
 
-				if val == "\n":
+				if value == "\n":
 					continue
 
-				if int(val) > 1200 or int(val) == -1: # caso o valor esteja fora do range, seta o valor
-					val = 1200
+				if int(value) > 1200 or int(value) == -1: # caso o valor esteja fora do range, seta o valor
+					value = 1200
 
-				mat[i][j] = float(int(val))
+				mat[i][j] = float(int(value))
 
 				j += 1
 				j = j % 640
@@ -96,22 +105,20 @@ def create_couple(file_path):
 	while folder == "datalab": 
 		folder = np.random.choice(glob.glob(file_path + "*"))
 
-	print('Folder: ')
-	print(folder)
 
 	mat_small = [0, 0]
 
 	for index in range(len(mat_small)):
 
-		mat_small[index] = bitMatrix(folder)['mat_small']
+		mat_small[index] = pixelMatrix(folder)['mat_small']
 
-	# plt.imshow(mat_small)
-	# plt.show()
+		# plt.imshow(mat_small[index])
+		# plt.show()
 
 	return np.array(mat_small)
 
 
-print(create_couple(train + '/'))
+# print(create_couple(dir_train + '/'))
 
 
 def create_couple_rgbd(file_path):
@@ -120,13 +127,11 @@ def create_couple_rgbd(file_path):
 	while folder == "datalab":
 		folder = np.random.choice(glob.glob(file_path + "*"))
 
-	# print(folder)
-
 	full = [0, 0]
 
 	for index in range(len(full)):
 
-		mat = bitMatrix(folder)
+		mat = pixelMatrix(folder)
 
 		img = Image.open(mat['depth_file'][:-5] + "c.bmp") # cria uma imagem .bmp
 		img.thumbnail((640, 480))
@@ -138,7 +143,7 @@ def create_couple_rgbd(file_path):
 			img = img[160:360, 240:440] # recorta a matriz, com margens horizontais de (160, 122) células e margens verticais de (240, 200) células
 
 
-		# plt.imshow(mat_small)
+		# plt.imshow(mat['mat_small'])
 		# plt.show()
 		# plt.imshow(img)
 		# plt.show()
@@ -150,7 +155,7 @@ def create_couple_rgbd(file_path):
 	return np.array(full)
 
 
-create_couple_rgbd(val + '/')
+# create_couple_rgbd(dir_val + '/')
 
 
 def create_wrong(file_path):
@@ -163,16 +168,15 @@ def create_wrong(file_path):
 		while folder == "datalab": 
 			folder = np.random.choice(glob.glob(file_path + "*"))
 
-		mat_small[index] = bitMatrix(folder)['mat_small']
+		mat_small[index] = pixelMatrix(folder)['mat_small']
 
-	# plt.imshow(mat_small)
-	# plt.show()
+		# plt.imshow(mat_small[index])
+		# plt.show()
 
 	return np.array(mat_small)
 
 
-create_wrong(train + '/')
-
+#create_wrong(dir_train + '/')
 
 
 def create_wrong_rgbd(file_path):
@@ -185,16 +189,14 @@ def create_wrong_rgbd(file_path):
 		while folder == "datalab":
 			folder = np.random.choice(glob.glob(file_path + "*"))
 
-		# print(folder)
-
-		mat = bitMatrix(folder)
+		mat = pixelMatrix(folder)
 
 		img = Image.open(mat['depth_file'][:-5] + "c.bmp") # cria uma imagem .bmp
 		img.thumbnail((640, 480))
 		img = np.asarray(img)
 		img = img[140:340, 220:420] # recorta a matriz, com margens horizontais de 140 células e margens verticais de 220 células
 
-		# plt.imshow(mat_small)
+		# plt.imshow(mat['mat_small'])
 		# plt.show()
 		# plt.imshow(img)
 		# plt.show()
@@ -207,17 +209,19 @@ def create_wrong_rgbd(file_path):
 
 
 
-create_wrong_rgbd(val + '/')[0].shape
+#create_wrong_rgbd(dir_val + '/')[0].shape
 
 
 
 
 
 '''
-	Elaboração de redes.
+	Elaboração de redes (rede convolucional siamês baseada na arquitetura SqueezeNet com perda contrastiva)
 	Agora nós criamos a rede. Primeiro criamos manualmente * a perda construtiva *, depois definimos a arquitetura de rede a partir da arquitetura SqueezeNet, e depois a usamos como uma rede siamesa para incorporar faces em um manifold. (a rede, por enquanto, é muito grande e pode ser muito otimizada, mas eu só queria mostrar uma prova de conceito)
 '''
 
+# https://keras.io/
+import keras
 from keras.models import Sequential, Model
 from keras.layers import Dense, Activation, Flatten, Dropout, Lambda, ELU, concatenate, GlobalAveragePooling2D, Input, BatchNormalization, SeparableConv2D, Subtract, concatenate
 from keras.activations import relu, softmax
@@ -225,20 +229,27 @@ from keras.layers.convolutional import Convolution2D
 from keras.layers.pooling import MaxPooling2D, AveragePooling2D
 from keras.optimizers import Adam, RMSprop, SGD
 from keras.regularizers import l2
-from keras import backend as K
+from keras import backend
+from keras.models import load_model
 
 def euclidean_distance(inputs):
-    assert len(inputs) == 2, 'Euclidean distance needs 2 inputs, %d given' % len(inputs)
-    u, v = inputs
-    return K.sqrt(K.sum((K.square(u - v)), axis=1, keepdims=True))
+	
+	assert len(inputs) == 2, 'Euclidean distance needs 2 inputs, %d given' % len(inputs)
+	u, v = inputs
+	
+	return backend.sqrt(backend.sum((backend.square(u - v)), axis=1, keepdims=True))
         
 
 def contrastive_loss(y_true, y_pred):
-    margin=1.
-    return K.mean((1. - y_true) * K.square(y_pred) + y_true * K.square(K.maximum(margin - y_pred, 0.)))
-   # return K.mean( K.square(y_pred) )
 
-def fire(x, squeeze=16, expand=64):
+	margin = 1.
+
+	return backend.mean((1. - y_true) * backend.square(y_pred) + y_true * backend.square(backend.maximum(margin - y_pred, 0.)))
+	# return backend.mean( backend.square(y_pred) )
+
+# Expande a convolução
+def fire(x, squeeze = 16, expand = 64):
+    
     x = Convolution2D(squeeze, (1,1), padding='valid')(x)
     x = Activation('relu')(x)
     
@@ -248,61 +259,57 @@ def fire(x, squeeze=16, expand=64):
     right = Convolution2D(expand, (3,3), padding='same')(x)
     right = Activation('relu')(right)
     
-    x = concatenate([left, right], axis=3)
+    x = concatenate([left, right], axis = 3)
 
     return x
 
 
 
 
-img_input = Input(shape=(200,200,4))
+img_input = Input(shape = (200, 200, 4))
 
-x = Convolution2D(64, (5, 5), strides=(2, 2), padding='valid')(img_input)
-x = BatchNormalization()(x)
-x = Activation('relu')(x)
-x = MaxPooling2D(pool_size=(3, 3), strides=(2, 2))(x)
+x = Convolution2D(64, (5, 5), strides = (2, 2), padding = 'valid')(img_input) # (dimensionalidade do espaço de saída, largura da janela de convolução 2D, os passos da convolução ao longo da altura e largura, padding)
+x = BatchNormalization()(x) # Normaliza entre 0 e 1
+x = Activation('relu')(x) # função de ativação
+x = MaxPooling2D(pool_size = (3, 3), strides = (2, 2))(x) # (irá reduzir pela 1/3 a entrada em ambas as dimensões espaciais, largura da janela de convolução 2D)
 
-x = fire(x, squeeze=16, expand=16)
+x = fire(x, squeeze = 16, expand = 16)
+x = fire(x, squeeze = 16, expand = 16)
 
-x = fire(x, squeeze=16, expand=16)
+x = MaxPooling2D(pool_size = (3, 3), strides = (2, 2))(x)
 
-x = MaxPooling2D(pool_size=(3, 3), strides=(2, 2))(x)
+x = fire(x, squeeze = 32, expand = 32)
+x = fire(x, squeeze = 32, expand = 32)
 
+x = MaxPooling2D(pool_size = (3, 3), strides = (2, 2))(x)
 
-x = fire(x, squeeze=32, expand=32)
+x = fire(x, squeeze = 48, expand = 48)
+x = fire(x, squeeze = 48, expand = 48)
 
-x = fire(x, squeeze=32, expand=32)
+x = fire(x, squeeze = 64, expand = 64)
+x = fire(x, squeeze = 64, expand = 64)
 
-x = MaxPooling2D(pool_size=(3, 3), strides=(2, 2))(x)
+x = Dropout(0.2)(x) # Taxa do treinamento
 
+x = Convolution2D(512, (1, 1), padding = 'same')(x)
+out = Activation('relu')(x) # Calculo retificado linear
 
-x = fire(x, squeeze=48, expand=48)
+modelsqueeze = Model(img_input, out) # Agrupa camadas em um objeto com recursos de treinamento e inferência
 
-x = fire(x, squeeze=48, expand=48)
-
-x = fire(x, squeeze=64, expand=64)
-
-x = fire(x, squeeze=64, expand=64)
-
-x = Dropout(0.2)(x)
-
-x = Convolution2D(512, (1, 1), padding='same')(x)
-out = Activation('relu')(x)
+modelsqueeze.summary() # Imprime um resumo de cadeia da rede
 
 
-modelsqueeze = Model(img_input, out)
 
-modelsqueeze.summary()
 
-im_in = Input(shape=(200,200,4))
-#wrong = Input(shape=(200,200,3))
+im_in = Input(shape = (200,200,4))
+#wrong = Input(shape = (200,200,3))
 
 x1 = modelsqueeze(im_in)
-#x = Convolution2D(64, (5, 5), padding='valid', strides =(2,2))(x)
 
+#x = Convolution2D(64, (5, 5), padding='valid', strides =(2,2))(x)
 #x1 = MaxPooling2D(pool_size=(3, 3), strides=(2, 2))(x1)
 
-"""
+'''
 x1 = Convolution2D(256, (3,3), padding='valid', activation="relu")(x1)
 x1 = Dropout(0.4)(x1)
 x1 = MaxPooling2D(pool_size=(3, 3), strides=(1, 1))(x1)
@@ -312,17 +319,17 @@ x1 = Dropout(0.4)(x1)
 x1 = Convolution2D(64, (1,1), padding='same', activation="relu")(x1)
 x1 = BatchNormalization()(x1)
 x1 = Dropout(0.4)(x1)
-"""
+'''
 
 
 
-x1 = Flatten()(x1)
+x1 = Flatten()(x1) # Aplaina a entrada
 
-x1 = Dense(512, activation = "relu")(x1)
+x1 = Dense(512, activation = "relu")(x1) # camada NN normal e densamente conectada
 x1 = Dropout(0.2)(x1)
 #x1 = BatchNormalization()(x1)
 feat_x = Dense(128, activation = "linear")(x1)
-feat_x = Lambda(lambda  x: K.l2_normalize(x, axis=1))(feat_x)
+feat_x = Lambda(lambda  x: backend.l2_normalize(x, axis = 1))(feat_x)
 
 
 model_top = Model(inputs = [im_in], outputs = feat_x)
@@ -344,25 +351,25 @@ model_final = Model(inputs = [im_in1, im_in2], outputs = lambda_merge)
 model_final.summary()
 
 adam = Adam(lr = 0.001)
+#sgd = SGD(lr = 0.001, momentum = 0.9) # pode ser usado no lugar do adam
 
-sgd = SGD(lr = 0.001, momentum = 0.9)
+model_final.compile(optimizer = adam, loss = contrastive_loss) # (nome do otimizador, nome da função objetivo) Configura o modelo para treinamento.
 
-model_final.compile(optimizer = adam, loss = contrastive_loss)
-
-"""# Learning phase.
-We write the generators that will give our model batches of data to train on, then we run the training.
-"""
+'''
+Fase de aprendizagem
+Nós escrevemos os geradores que darão ao nosso modelo lotes de dados para treinar, então nós executamos o treinamento
+'''
 
 def generator(batch_size, file_path):
 
-	while 1:
+	while True:
 		
 		X=[]
 		y=[]
 		switch = True
 		
 		for _ in range(batch_size):
-			# switch += 1
+
 			if switch:
 				# print("correct")
 				X.append(create_couple_rgbd(file_path + '/').reshape((2,200,200,4)))
@@ -383,18 +390,26 @@ def generator(batch_size, file_path):
 		yield [X[:,0],X[:,1]],y
 
 
-train_gen = generator(16, train)
-val_gen = generator(4, val)
+train_gen = generator(16, dir_train)
+val_gen = generator(4, dir_val)
 
-outputs = model_final.fit_generator(train_gen, steps_per_epoch = 30, epochs = 50, validation_data = val_gen, validation_steps = 20)
+
+# Treina o modelo em dados gerados lote a lote por um gerador
+outputs = model_final.fit_generator(train_gen, steps_per_epoch = 30, epochs = 1, validation_data = val_gen, validation_steps = 20)
+
+
+
+
+
+
 
 ''' Alguns testes de modelo '''
 
-cop = create_couple(val + '/')
-model_final.evaluate([cop[0].reshape((1,200,200,4)), cop[1].reshape((1,200,200,4))], np.array([0.]))
+cop = create_couple_rgbd(dir_val + '/')
+model_final.evaluate([cop[0].reshape((1, 200, 200, 4)), cop[1].reshape((1, 200, 200, 4))], np.array([0.]))
 
-cop = create_wrong_rgbd(val + '/')
-model_final.predict([cop[0].reshape((1,200,200,4)), cop[1].reshape((1,200,200,4))])
+cop = create_wrong_rgbd(dir_val + '/')
+model_final.predict([cop[0].reshape((1, 200, 200, 4)), cop[1].reshape((1, 200, 200, 4))])
 
 
 
@@ -411,8 +426,9 @@ Salvando e carregando o modelo
 As próximas células mostram como salvar as ponderações do modelo e enviá-las para o seu Drive e, em seguida, como recuperar esses pesos do Drive para carregar um modelo pré-treinado.
 '''
 
-model_final.save("faceid_big_rgbd_2.h5")
+# model_final.save("faceid_big_rgbd_2.h5")
 
+'''
 from google.colab import files
 
 # Install the PyDrive wrapper & import libraries.
@@ -457,16 +473,39 @@ downloaded = drive.CreateFile({'id': file_id})
 #print('Downloaded content "{}"'.format(downloaded.GetContentString()))
 
 downloaded.GetContentFile('pesi.h5')
+'''
 
-from keras.models import load_model
 
-model_final.load_weights('pesi.h5')
 
-"""# Raw output.
-Here we create a model that outputs the embedding of an input face instead of the distance between two embeddings, so we can map those outputs.
-"""
+'''
+weights = 'pesi.h5'
+if os.path.exists(dir_model + '/' + weights):
+	if input('Você deseja utilizar um modelo de pesos salvo [Y/N]: ').upper() == 'Y':
+	
+		model_final.load_weights(dir_model + '/' + weights)
+	
+	else:
 
-im_in1 = Input(shape=(200,200,4))
+		# aqui ficará o fluxo do programa
+		# Input
+		# pré-processamento
+		# treinar 75%
+		# validação 25%
+		# Show
+
+		if os.path.isdir(dir_model):
+			os.mkdir(dir_model)
+		model_final.save(dir_model + '/' + weights)
+'''
+
+
+
+'''
+	Saída bruta
+	Aqui nós criamos um modelo que gera a incorporação de uma face de entrada em vez da distância entre dois envoltórios, para que possamos mapear essas saídas.
+'''
+
+im_in1 = Input(shape = (200, 200, 4))
 #im_in2 = Input(shape=(200,200,4))
 
 feat_x1 = model_top(im_in1)
@@ -478,77 +517,99 @@ model_output = Model(inputs = im_in1, outputs = feat_x1)
 
 model_output.summary()
 
-adam = Adam(lr=0.001)
+adam = Adam(lr = 0.001)
 
-sgd = SGD(lr=0.001, momentum=0.9)
+sgd = SGD(lr = 0.001, momentum = 0.9)
 
-model_output.compile(optimizer=adam, loss=contrastive_loss)
+model_output.compile(optimizer = adam, loss = contrastive_loss)
 
-cop = create_couple_rgbd(val + '/')
-model_output.predict(cop[0].reshape((1,200,200,4)))
-
-def create_input_rgbd(file_path):
-	# print(folder)
-	mat=np.zeros((480,640), dtype='float32')
-	i=0
-	j=0
-	depth_file = file_path
-	with open(depth_file) as file:
-		for line in file:
-			vals = line.split('\t')
-			for val in vals:
-				if val == "\n": continue    
-				if int(val) > 1200 or int(val) == -1: val= 1200
-				mat[i][j]=float(int(val))
-				j+=1
-				j=j%640
-
-			i+=1
-		mat = np.asarray(mat)
-	mat_small=mat[140:340,220:420]
-	img = Image.open(depth_file[:-5] + "c.bmp")
-	img.thumbnail((640,480))
-	img = np.asarray(img)
-	img = img[140:340,220:420]
-	mat_small=(mat_small-np.mean(mat_small))/np.max(mat_small)
-	plt.figure(figsize=(8,8))
-	plt.grid(True)
-	plt.xticks([])
-	plt.yticks([])
-	plt.imshow(mat_small)
-	plt.show()
-	plt.figure(figsize=(8,8))
-	plt.grid(True)
-	plt.xticks([])
-	plt.yticks([])
-	plt.imshow(img)
-	plt.show()
+cop = create_couple_rgbd(dir_val + '/')
+model_output.predict(cop[0].reshape((1, 200, 200, 4)))
 
 
-
-	full1 = np.zeros((200,200,4))
-	full1[:,:,:3] = img[:,:,:3]
-	full1[:,:,3] = mat_small
-
-	return np.array([full1])
 
 """# Data visualization.
 Here we store the embeddings for all the faces in the dataset. Then, using both **t-SNE** and **PCA**, we visualize the embeddings going from 128 to 2 dimensions.
 """
 
-outputs=[]
-n=0
-for folder in glob.glob(train + '/*'):
+def create_input_rgbd(file_path):
+	# print(folder)
+	mat = np.zeros((480, 640), dtype='float32')
+	i = 0
+	j = 0
+	depth_file = file_path
 	
-	i=0
+	with open(depth_file) as file:
+		
+		for line in file:
+			
+			values = line.split('\t')
+			
+			for value in values:
+				
+				if value == "\n": continue  
+				
+				if int(value) > 1200 or int(value) == -1: value = 1200
+				
+				mat[i][j] = float(int(value))
+				
+				j += 1
+				j = j % 640
+
+			i += 1
+
+		mat = np.asarray(mat)
+	
+	mat_small = mat[140:340, 220:420]
+	mat_small = (mat_small - np.mean(mat_small)) / np.max(mat_small)
+	
+	img = Image.open(depth_file[:-5] + "c.bmp")
+	img.thumbnail((640, 480))
+	img = np.asarray(img)
+	img = img[140:340, 220:420]
+	
+	'''
+	plt.figure(figsize = (8, 8))
+	plt.grid(True)
+	plt.xticks([])
+	plt.yticks([])
+	plt.imshow(mat_small)
+	plt.show()
+	plt.figure(figsize = (8, 8))
+	plt.grid(True)
+	plt.xticks([])
+	plt.yticks([])
+	plt.imshow(img)
+	plt.show()
+	'''
+
+	full = np.zeros((200, 200, 4))
+	full[:, :, :3] = img[:, :, :3]
+	full[:, :, 3] = mat_small
+
+	return np.array([full])
+
+'''
+	Visualização de dados (algoritmo t-SNE)
+'''
+
+outputs = []
+n = 0
+for folder in glob.glob(dir_train + '/*'):
+	
+	i = 0
 	
 	for file in glob.glob(folder + '/*.dat'):
-		i+=1
-		outputs.append(model_output.predict(create_input_rgbd(file).reshape((1,200,200,4))))
+		
+		outputs.append(model_output.predict(create_input_rgbd(file).reshape((1, 200, 200, 4))))
+		
+		i += 1
+	
+	
+	n += 1
 	
 	print(i)
-	n+=1
-	print("Folder ", n, " of ", len(glob.glob(train + '/*')))
+	print("Folder ", n, " of ", len(glob.glob(dir_train + '/*')))
 
 print(len(outputs))
 
@@ -579,16 +640,22 @@ for i in range(len((X_embedded))):
 	
 	el = X_embedded[i]
 	
-	if i % 51 == 0 and not i==0:
-		color+=1
-		color=color%10
-	plt.scatter(el[0], el[1], color="C" + str(color))
+	if i % 51 == 0 and not i == 0:
+		color += 1
+		color = color % 10
+	
+	plt.scatter(el[0], el[1], color = "C" + str(color))
 
-"""# Distance between two arbitrary RGBD pictures."""
+plt.show()
 
-file1 = (train + '/(2012-05-16)(154211)/015_1_d.dat')
+'''
+	Distância entre duas imagens RGBD arbitrárias
+'''
+
+file1 = (dir_train + '/(2012-05-16)(154211)/015_1_d.dat')
 inp1 = create_input_rgbd(file1)
-file1 = (train + '/(2012-05-16)(154211)/011_1_d.dat')
+file1 = (dir_train + '/(2012-05-16)(154211)/011_1_d.dat')
 inp2 = create_input_rgbd(file1)
 
 model_final.predict([inp1, inp2])
+#model_final.summary()
