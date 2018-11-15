@@ -395,7 +395,7 @@ val_gen = generator(4, dir_val)
 
 
 # Treina o modelo em dados gerados lote a lote por um gerador
-outputs = model_final.fit_generator(train_gen, steps_per_epoch = 30, epochs = 1, validation_data = val_gen, validation_steps = 20)
+outputs = model_final.fit_generator(train_gen, steps_per_epoch = 30, epochs = 50, validation_data = val_gen, validation_steps = 20)
 
 
 
