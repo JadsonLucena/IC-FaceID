@@ -1,9 +1,5 @@
 NumPy
-
 TensorFlow
 keras
-
 MatPlotLib
-
-#SciPy
 sklearn
