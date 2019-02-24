@@ -6,8 +6,11 @@ Onde se resume em uma rede convolucional siamês baseada na arquitetura SqueezeN
 
 **Material auxiliar:** [Lecture Collection | Convolutional Neural Networks for Visual Recognition (Spring 2017)](https://www.youtube.com/playlist?list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv)
 
-**Dependencias:**
-- TensorFlow
-- Keras
-- MatPlotLib
-- sklearn
+**Rodar o projeto:**
+- sudo apt-get update
+- sudo apt-get install python3.6
+- sudo apt-get install python3-pip
+
+- pip3 install -r requirements.txt
+
+- python3 faceId.py
