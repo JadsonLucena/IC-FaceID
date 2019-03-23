@@ -3,3 +3,4 @@ TensorFlow
 keras
 MatPlotLib
 sklearn
+requests
