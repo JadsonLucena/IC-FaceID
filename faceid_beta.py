@@ -44,9 +44,9 @@ dir_model = 'model'
 
 
 # Dados de treinamento
-crawler(dir_train, ["http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(151751).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(153054).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(154211).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(160440).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(160931).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(161342).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(163349).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(164248).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(141550).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(142154).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(142457).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(143016).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(132824).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(133201).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(133846).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(134239).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(134757).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(140516).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(143345).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(144316).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(145150).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(145623).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(150303).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(150650).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(151337).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(151650).zip"])
+#crawler(dir_train, ["http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(151751).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(153054).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(154211).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(160440).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(160931).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(161342).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(163349).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-16)(164248).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(141550).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(142154).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(142457).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-17)(143016).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(132824).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(133201).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(133846).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(134239).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(134757).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(140516).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(143345).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(144316).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(145150).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(145623).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(150303).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(150650).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(151337).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(151650).zip"])
 # Dados de validação
-crawler(dir_val, ["http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(152717).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(153532).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(154129).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(154728).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(155357).zip"])
+#crawler(dir_val, ["http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(152717).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(153532).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(154129).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(154728).zip", "http://vap.aau.dk/wp-content/uploads/VAPRBGD/(2012-05-18)(155357).zip"])
 
 
 '''
@@ -60,7 +60,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 
 
-def pixelMatrix(folder):
+def depthMatrix(folder):
 
 	# print('Folder: ')
 	# print(folder)
@@ -78,13 +78,14 @@ def pixelMatrix(folder):
 
 			for value in values:
 
+
 				if value == "\n":
 					continue
 
-				if int(value) > 1200 or int(value) == -1: # caso o valor esteja fora do range, seta o valor
+				if int(float(str(value))) > 1200 or int(float(str(value))) == -1: # missing values
 					value = 1200
 
-				mat[i][j] = float(int(value))
+				mat[i][j] = float(str(value))
 
 				j += 1
 				j = j % 640
@@ -93,8 +94,8 @@ def pixelMatrix(folder):
 
 		mat = np.asarray(mat)
 
-	mat_small = mat[140:340, 220:420] # recorta a matriz, com margens horizontais de 140 células e margens verticais de 220 células
-	mat_small = (mat_small - np.mean(mat_small)) / np.max(mat_small) # calcula o erro
+	mat_small = mat[140:340, 220:420] # recorta a matriz, com paddings horizontais de 140 células e paddings verticais de 220 células
+	mat_small = (mat_small - np.mean(mat_small)) / np.max(mat_small) # normalização (Ps: encontrar uma forma de obter o valor máximo global desse tipo de arquivo, para que ele não venha pegr um máximo local e gerar normalizações em escalas diferentes para cada arquivo)
 
 	return {'mat_small' : mat_small, 'depth_file' : depth_file}
 
@@ -102,7 +103,7 @@ def pixelMatrix(folder):
 def create_couple(file_path):
 
 	folder = np.random.choice(glob.glob(file_path + "*")) # Pega um dos arquivos aleatoriamente
-	while folder == "datalab": 
+	while folder == "datasetalab": 
 		folder = np.random.choice(glob.glob(file_path + "*"))
 
 
@@ -110,7 +111,7 @@ def create_couple(file_path):
 
 	for index in range(len(mat_small)):
 
-		mat_small[index] = pixelMatrix(folder)['mat_small']
+		mat_small[index] = depthMatrix(folder)['mat_small']
 
 		# plt.imshow(mat_small[index])
 		# plt.show()
@@ -131,16 +132,16 @@ def create_couple_rgbd(file_path):
 
 	for index in range(len(full)):
 
-		mat = pixelMatrix(folder)
+		mat = depthMatrix(folder)
 
-		img = Image.open(mat['depth_file'][:-5] + "c.bmp") # cria uma imagem .bmp
+		img = Image.open(mat['depth_file'].replace('.dat', '.bmp')) # cria uma imagem .bmp
 		img.thumbnail((640, 480))
 		img = np.asarray(img)
 
 		if (index == 0):
-			img = img[140:340, 220:420] # recorta a matriz, com margens horizontais de 140 células e margens verticais de 220 células
+			img = img[140:340, 220:420] # recorta a matriz, com paddings horizontais de 140 células e paddings verticais de 220 células
 		else:
-			img = img[160:360, 240:440] # recorta a matriz, com margens horizontais de (160, 122) células e margens verticais de (240, 200) células
+			img = img[160:360, 240:440] # recorta a matriz, com paddings horizontais de (160, 122) células e paddings verticais de (240, 200) células
 
 
 		# plt.imshow(mat['mat_small'])
@@ -150,7 +151,7 @@ def create_couple_rgbd(file_path):
 
 		full[index] = np.zeros((200, 200, 4)) # Cria uma matriz de zeros com 4 dimensões
 		full[index][:, :, :3] = img[:, :, :3] # Insere valores até a terceira dimensão
-		full[index][: , :, 3] = mat['mat_small'] # Insere valores na quarta dimensão
+		full[index][: , :, 3] = mat['mat_small'] # Insere valores da profundidade na quarta dimensão
 
 	return np.array(full)
 
@@ -168,7 +169,7 @@ def create_wrong(file_path):
 		while folder == "datalab": 
 			folder = np.random.choice(glob.glob(file_path + "*"))
 
-		mat_small[index] = pixelMatrix(folder)['mat_small']
+		mat_small[index] = depthMatrix(folder)['mat_small']
 
 		# plt.imshow(mat_small[index])
 		# plt.show()
@@ -189,12 +190,12 @@ def create_wrong_rgbd(file_path):
 		while folder == "datalab":
 			folder = np.random.choice(glob.glob(file_path + "*"))
 
-		mat = pixelMatrix(folder)
+		mat = depthMatrix(folder)
 
-		img = Image.open(mat['depth_file'][:-5] + "c.bmp") # cria uma imagem .bmp
+		img = Image.open(mat['depth_file'].replace('.dat', '.bmp')) # cria uma imagem .bmp
 		img.thumbnail((640, 480))
 		img = np.asarray(img)
-		img = img[140:340, 220:420] # recorta a matriz, com margens horizontais de 140 células e margens verticais de 220 células
+		img = img[140:340, 220:420] # recorta a matriz, com paddings horizontais de 140 células e paddings verticais de 220 células
 
 		# plt.imshow(mat['mat_small'])
 		# plt.show()
@@ -217,7 +218,7 @@ def create_wrong_rgbd(file_path):
 
 '''
 	Elaboração de redes (rede convolucional siamês baseada na arquitetura SqueezeNet com perda contrastiva)
-	Agora nós criamos a rede. Primeiro criamos manualmente * a perda construtiva *, depois definimos a arquitetura de rede a partir da arquitetura SqueezeNet, e depois a usamos como uma rede siamesa para incorporar faces em um manifold. (a rede, por enquanto, é muito grande e pode ser muito otimizada, mas eu só queria mostrar uma prova de conceito)
+	Agora nós criamos a rede. Primeiro criamos manualmente * a perda contrastiva *, depois definimos a arquitetura da rede a partir da arquitetura SqueezeNet, e depois a usamos como uma rede siamesa para incorporar faces em um manifold. (a rede, por enquanto, é muito grande e pode ser muito otimizada, mas eu só queria mostrar uma prova de conceito)
 '''
 
 # https://keras.io/
@@ -227,10 +228,11 @@ from keras.layers import Dense, Activation, Flatten, Dropout, Lambda, ELU, conca
 from keras.activations import relu, softmax
 from keras.layers.convolutional import Convolution2D
 from keras.layers.pooling import MaxPooling2D, AveragePooling2D
-from keras.optimizers import Adam, RMSprop, SGD
+from keras.optimizers import SGD, RMSprop, Adagrad, Adadelta, Adam, Adamax, Nadam # Verificar o que é mais eficaz 
 from keras.regularizers import l2
 from keras import backend
 from keras.models import load_model
+
 
 def euclidean_distance(inputs):
 	
@@ -240,14 +242,18 @@ def euclidean_distance(inputs):
 	return backend.sqrt(backend.sum((backend.square(u - v)), axis=1, keepdims=True))
         
 
+
 def contrastive_loss(y_true, y_pred):
+
+	print('entrouuuuu')
 
 	margin = 1.
 
 	return backend.mean((1. - y_true) * backend.square(y_pred) + y_true * backend.square(backend.maximum(margin - y_pred, 0.)))
 	# return backend.mean( backend.square(y_pred) )
 
-# Expande a convolução
+
+# Expande as dimenções da convolução
 def fire(x, squeeze = 16, expand = 64):
     
     x = Convolution2D(squeeze, (1,1), padding='valid')(x)
@@ -264,273 +270,257 @@ def fire(x, squeeze = 16, expand = 64):
     return x
 
 
+# Fase de aprendizagem: Nós escrevemos os geradores que darão ao nosso modelo lotes de dados (manifold) para treinar, então nós executamos o treinamento
+def generatorBatch(batch_size, file_path):
 
-
-img_input = Input(shape = (200, 200, 4))
-
-x = Convolution2D(64, (5, 5), strides = (2, 2), padding = 'valid')(img_input) # (dimensionalidade do espaço de saída, largura da janela de convolução 2D, os passos da convolução ao longo da altura e largura, padding)
-x = BatchNormalization()(x) # Normaliza entre 0 e 1
-x = Activation('relu')(x) # função de ativação
-x = MaxPooling2D(pool_size = (3, 3), strides = (2, 2))(x) # (irá reduzir pela 1/3 a entrada em ambas as dimensões espaciais, largura da janela de convolução 2D)
-
-x = fire(x, squeeze = 16, expand = 16)
-x = fire(x, squeeze = 16, expand = 16)
-
-x = MaxPooling2D(pool_size = (3, 3), strides = (2, 2))(x)
-
-x = fire(x, squeeze = 32, expand = 32)
-x = fire(x, squeeze = 32, expand = 32)
-
-x = MaxPooling2D(pool_size = (3, 3), strides = (2, 2))(x)
-
-x = fire(x, squeeze = 48, expand = 48)
-x = fire(x, squeeze = 48, expand = 48)
-
-x = fire(x, squeeze = 64, expand = 64)
-x = fire(x, squeeze = 64, expand = 64)
-
-x = Dropout(0.2)(x) # Taxa do treinamento
-
-x = Convolution2D(512, (1, 1), padding = 'same')(x)
-out = Activation('relu')(x) # Calculo retificado linear
-
-modelsqueeze = Model(img_input, out) # Agrupa camadas em um objeto com recursos de treinamento e inferência
-
-modelsqueeze.summary() # Imprime um resumo de cadeia da rede
-
-
-
-
-im_in = Input(shape = (200,200,4))
-#wrong = Input(shape = (200,200,3))
-
-x1 = modelsqueeze(im_in)
-
-#x = Convolution2D(64, (5, 5), padding='valid', strides =(2,2))(x)
-#x1 = MaxPooling2D(pool_size=(3, 3), strides=(2, 2))(x1)
-
-'''
-x1 = Convolution2D(256, (3,3), padding='valid', activation="relu")(x1)
-x1 = Dropout(0.4)(x1)
-x1 = MaxPooling2D(pool_size=(3, 3), strides=(1, 1))(x1)
-x1 = Convolution2D(256, (3,3), padding='valid', activation="relu")(x1)
-x1 = BatchNormalization()(x1)
-x1 = Dropout(0.4)(x1)
-x1 = Convolution2D(64, (1,1), padding='same', activation="relu")(x1)
-x1 = BatchNormalization()(x1)
-x1 = Dropout(0.4)(x1)
-'''
-
-
-
-x1 = Flatten()(x1) # Aplaina a entrada
-
-x1 = Dense(512, activation = "relu")(x1) # camada NN normal e densamente conectada
-x1 = Dropout(0.2)(x1)
-#x1 = BatchNormalization()(x1)
-feat_x = Dense(128, activation = "linear")(x1)
-feat_x = Lambda(lambda  x: backend.l2_normalize(x, axis = 1))(feat_x)
-
-
-model_top = Model(inputs = [im_in], outputs = feat_x)
-
-model_top.summary()
-
-im_in1 = Input(shape = (200,200,4))
-im_in2 = Input(shape = (200,200,4))
-
-feat_x1 = model_top(im_in1)
-feat_x2 = model_top(im_in2)
-
-
-lambda_merge = Lambda(euclidean_distance)([feat_x1, feat_x2])
-
-
-model_final = Model(inputs = [im_in1, im_in2], outputs = lambda_merge)
-
-model_final.summary()
-
-adam = Adam(lr = 0.001)
-#sgd = SGD(lr = 0.001, momentum = 0.9) # pode ser usado no lugar do adam
-
-model_final.compile(optimizer = adam, loss = contrastive_loss) # (nome do otimizador, nome da função objetivo) Configura o modelo para treinamento.
-
-'''
-Fase de aprendizagem
-Nós escrevemos os geradores que darão ao nosso modelo lotes de dados para treinar, então nós executamos o treinamento
-'''
-
-def generator(batch_size, file_path):
-
-	while True:
-		
-		X=[]
-		y=[]
-		switch = True
-		
-		for _ in range(batch_size):
-
-			if switch:
-				# print("correct")
-				X.append(create_couple_rgbd(file_path + '/').reshape((2,200,200,4)))
-				y.append(np.array([0.]))
-			else:
-				# print("wrong")
-				X.append(create_wrong_rgbd(file_path + '/').reshape((2,200,200,4)))
-				y.append(np.array([1.]))
+		while True:
 			
-			switch = not switch
+			X = []
+			y = []
+			switch = True
+			
+			for _ in range(batch_size):
 
-		X = np.asarray(X)
-		y = np.asarray(y)
-		
-		XX1 = X[0,:]
-		XX2 = X[1,:]
+				if switch:
+					# print("correct")
+					X.append(create_couple_rgbd(file_path + '/').reshape((2,200,200,4)))
+					y.append(np.array([0.]))
+				else:
+					# print("wrong")
+					X.append(create_wrong_rgbd(file_path + '/').reshape((2,200,200,4)))
+					y.append(np.array([1.]))
+				
+				switch = not switch
 
-		yield [X[:,0],X[:,1]],y
+			X = np.asarray(X)
+			y = np.asarray(y)
+			
+			XX1 = X[0, :]
+			XX2 = X[1, :]
 
-
-train_gen = generator(16, dir_train)
-val_gen = generator(4, dir_val)
-
-
-# Treina o modelo em dados gerados lote a lote por um gerador
-outputs = model_final.fit_generator(train_gen, steps_per_epoch = 30, epochs = 50, validation_data = val_gen, validation_steps = 20)
-
-
-
-
-
-
-
-''' Alguns testes de modelo '''
-
-cop = create_couple_rgbd(dir_val + '/')
-model_final.evaluate([cop[0].reshape((1, 200, 200, 4)), cop[1].reshape((1, 200, 200, 4))], np.array([0.]))
-
-cop = create_wrong_rgbd(dir_val + '/')
-model_final.predict([cop[0].reshape((1, 200, 200, 4)), cop[1].reshape((1, 200, 200, 4))])
+			yield [ X[:, 0], X[:, 1] ], y
 
 
 
+def siameseNetworkSqueezeNet(config):
+
+	img_input = Input(shape = (200, 200, 4))
+
+	x = Convolution2D(64, (5, 5), strides = (2, 2), padding = 'valid')(img_input) # (dimensionalidade do espaço de saída, largura da janela de convolução 2D, os passos da convolução ao longo da altura e largura, padding)
+	x = BatchNormalization()(x) # Normaliza entre 0 e 1
+	x = Activation('relu')(x) # função de ativação
+	x = MaxPooling2D(pool_size = (3, 3), strides = (2, 2))(x) # (irá reduzir pela 1/3 a entrada em ambas as dimensões espaciais, largura da janela de convolução 2D)
+
+	x = fire(x, squeeze = 16, expand = 16)
+	x = fire(x, squeeze = 16, expand = 16)
+
+	x = MaxPooling2D(pool_size = (3, 3), strides = (2, 2))(x)
+
+	x = fire(x, squeeze = 32, expand = 32)
+	x = fire(x, squeeze = 32, expand = 32)
+
+	x = MaxPooling2D(pool_size = (3, 3), strides = (2, 2))(x)
+
+	x = fire(x, squeeze = 48, expand = 48)
+	x = fire(x, squeeze = 48, expand = 48)
+
+	x = fire(x, squeeze = 64, expand = 64)
+	x = fire(x, squeeze = 64, expand = 64)
+
+	x = Dropout(0.2)(x) # Taxa do treinamento
+
+	x = Convolution2D(512, (1, 1), padding = 'same')(x)
+	out = Activation('relu')(x) # Calculo retificado linear
+
+	modelsqueeze = Model(img_input, out) # Agrupa camadas em um objeto com recursos de treinamento e inferência
+
+	modelsqueeze.summary() # Imprime um resumo de cadeia da rede
 
 
 
 
+	im_in = Input(shape = (200,200,4))
+	#wrong = Input(shape = (200,200,3))
+
+	x1 = modelsqueeze(im_in)
+
+	#x = Convolution2D(64, (5, 5), padding='valid', strides =(2,2))(x)
+	#x1 = MaxPooling2D(pool_size=(3, 3), strides=(2, 2))(x1)
+
+	'''
+	x1 = Convolution2D(256, (3,3), padding='valid', activation="relu")(x1)
+	x1 = Dropout(0.4)(x1)
+	x1 = MaxPooling2D(pool_size=(3, 3), strides=(1, 1))(x1)
+	x1 = Convolution2D(256, (3,3), padding='valid', activation="relu")(x1)
+	x1 = BatchNormalization()(x1)
+	x1 = Dropout(0.4)(x1)
+	x1 = Convolution2D(64, (1,1), padding='same', activation="relu")(x1)
+	x1 = BatchNormalization()(x1)
+	x1 = Dropout(0.4)(x1)
+	'''
 
 
 
+	x1 = Flatten()(x1) # Aplaina a entrada
 
-'''
-Salvando e carregando o modelo
-As próximas células mostram como salvar as ponderações do modelo e enviá-las para o seu Drive e, em seguida, como recuperar esses pesos do Drive para carregar um modelo pré-treinado.
-'''
-
-# model_final.save("faceid_big_rgbd_2.h5")
-
-'''
-from google.colab import files
-
-# Install the PyDrive wrapper & import libraries.
-# This only needs to be done once in a notebook.
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
-from google.colab import auth
-from oauth2client.client import GoogleCredentials
-
-# Authenticate and create the PyDrive client.
-# This only needs to be done once in a notebook.
-auth.authenticate_user()
-gauth = GoogleAuth()
-gauth.credentials = GoogleCredentials.get_application_default()
-drive = GoogleDrive(gauth)
-
-# Create & upload a file.
-uploaded = drive.CreateFile({'title': 'faceid_big_rgbd.h5'})
-uploaded.SetContentFile('faceid_big_rgbd.h5')
-uploaded.Upload()
-print('Uploaded file with ID {}'.format(uploaded.get('id')))
-
-# Install the PyDrive wrapper & import libraries.
-# This only needs to be done once per notebook.
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
-from google.colab import auth
-from oauth2client.client import GoogleCredentials
-
-# Authenticate and create the PyDrive client.
-# This only needs to be done once per notebook.
-auth.authenticate_user()
-gauth = GoogleAuth()
-gauth.credentials = GoogleCredentials.get_application_default()
-drive = GoogleDrive(gauth)
-
-# Download a file based on its file ID.
-#
-# A file ID looks like: laggVyWshwcyP6kEI-y_W3P8D26sz
-file_id = '17Lo_ZxYcKO751iYs4XRyIvVXME8Lyc75'
-downloaded = drive.CreateFile({'id': file_id})
-#print('Downloaded content "{}"'.format(downloaded.GetContentString()))
-
-downloaded.GetContentFile('pesi.h5')
-'''
+	x1 = Dense(512, activation = "relu")(x1) # camada NN normal e densamente conectada
+	x1 = Dropout(0.2)(x1)
+	#x1 = BatchNormalization()(x1)
+	feat_x = Dense(128, activation = "linear")(x1)
+	feat_x = Lambda(lambda  x: backend.l2_normalize(x, axis = 1))(feat_x)
 
 
+	model_top = Model(inputs = [im_in], outputs = feat_x)
 
-'''
-weights = 'pesi.h5'
-if os.path.exists(dir_model + '/' + weights):
-	if input('Você deseja utilizar um modelo de pesos salvo [Y/N]: ').upper() == 'Y':
+	model_top.summary()
+
+	im_in1 = Input(shape = (200,200,4))
+	im_in2 = Input(shape = (200,200,4))
+
+	feat_x1 = model_top(im_in1)
+	feat_x2 = model_top(im_in2)
+
+
+	lambda_merge = Lambda(euclidean_distance)([feat_x1, feat_x2])
+
+
+	model_final = Model(inputs = [im_in1, im_in2], outputs = lambda_merge)
+
+	model_final.summary()
+
+	model_final.compile(optimizer = config['compile']['optimizer'], loss = config['compile']['loss']) # (nome do otimizador, nome da função objetivo) Configura o modelo para treinamento.
+
+	'''
+	Fase de aprendizagem
+	Nós escrevemos os geradores que darão ao nosso modelo lotes de dados para treinar, então nós executamos o treinamento
+	'''
+
 	
-		model_final.load_weights(dir_model + '/' + weights)
-	
-	else:
 
-		# aqui ficará o fluxo do programa
-		# Input
-		# pré-processamento
-		# treinar 75%
-		# validação 25%
-		# Show
 
-		if os.path.isdir(dir_model):
-			os.mkdir(dir_model)
-		model_final.save(dir_model + '/' + weights)
+	train_gen = generatorBatch(16, dir_train)
+	val_gen = generatorBatch(4, dir_val)
+
+
+	# Treina o modelo em dados gerados lote a lote por um gerador
+	outputs = model_final.fit_generator(train_gen, steps_per_epoch = config['fit']['steps_per_epoch'], epochs = config['fit']['epochs'], validation_data = val_gen, validation_steps = config['fit']['validation_steps'])
+
+
+
+	''' Alguns testes de modelo '''
+	cop = create_couple_rgbd(dir_val + '/')
+	model_final.evaluate([cop[0].reshape((1, 200, 200, 4)), cop[1].reshape((1, 200, 200, 4))], np.array([0.]))
+
+	cop = create_wrong_rgbd(dir_val + '/')
+	model_final.predict([cop[0].reshape((1, 200, 200, 4)), cop[1].reshape((1, 200, 200, 4))])
+
+
+	'''
+	Salvando e carregando o modelo
+	As próximas células mostram como salvar as ponderações do modelo e enviá-las para o seu Drive e, em seguida, como recuperar esses pesos do Drive para carregar um modelo pré-treinado.
+	'''
+
+	# model_final.save("faceid_big_rgbd_2.h5")
+
+	'''
+	from google.colab import files
+
+	# Install the PyDrive wrapper & import libraries.
+	# This only needs to be done once in a notebook.
+	from pydrive.auth import GoogleAuth
+	from pydrive.drive import GoogleDrive
+	from google.colab import auth
+	from oauth2client.client import GoogleCredentials
+
+	# Authenticate and create the PyDrive client.
+	# This only needs to be done once in a notebook.
+	auth.authenticate_user()
+	gauth = GoogleAuth()
+	gauth.credentials = GoogleCredentials.get_application_default()
+	drive = GoogleDrive(gauth)
+
+	# Create & upload a file.
+	uploaded = drive.CreateFile({'title': 'faceid_big_rgbd.h5'})
+	uploaded.SetContentFile('faceid_big_rgbd.h5')
+	uploaded.Upload()
+	print('Uploaded file with ID {}'.format(uploaded.get('id')))
+
+	# Install the PyDrive wrapper & import libraries.
+	# This only needs to be done once per notebook.
+	from pydrive.auth import GoogleAuth
+	from pydrive.drive import GoogleDrive
+	from google.colab import auth
+	from oauth2client.client import GoogleCredentials
+
+	# Authenticate and create the PyDrive client.
+	# This only needs to be done once per notebook.
+	auth.authenticate_user()
+	gauth = GoogleAuth()
+	gauth.credentials = GoogleCredentials.get_application_default()
+	drive = GoogleDrive(gauth)
+
+	# Download a file based on its file ID.
+	#
+	# A file ID looks like: laggVyWshwcyP6kEI-y_W3P8D26sz
+	file_id = '17Lo_ZxYcKO751iYs4XRyIvVXME8Lyc75'
+	downloaded = drive.CreateFile({'id': file_id})
+	#print('Downloaded content "{}"'.format(downloaded.GetContentString()))
+
+	downloaded.GetContentFile('pesi.h5')
+	'''
+
+
+
+
+
+
+
+	'''
+		Saída bruta
+		Aqui nós criamos um modelo que gera a incorporação de uma face de entrada em vez da distância entre dois envoltórios, para que possamos mapear essas saídas.
+	'''
+
+	im_in1 = Input(shape = (200, 200, 4))
+	#im_in2 = Input(shape=(200,200,4))
+
+	feat_x1 = model_top(im_in1)
+	#feat_x2 = model_top(im_in2)
+
+
+
+	model_output = Model(inputs = im_in1, outputs = feat_x1)
+
+	model_output.summary()
+
+	model_output.compile(optimizer = config['compile']['optimizer'], loss = config['compile']['loss']) # Saida da rede siamesa
+
+	cop = create_couple_rgbd(dir_val + '/')
+	model_output.predict(cop[0].reshape((1, 200, 200, 4)))
+
+	return [model_final, model_output]
+
+
+
+output = siameseNetworkSqueezeNet({
+	'compile' : {
+		'optimizer'	: Adam(lr = 0.001),	# SGD, RMSprop, Adagrad, Adadelta, Adamax, Nadam
+		# 'optimizer'	: SGD(lr = 0.001, momentum = 0.9), # pode ser usado no lugar do adam
+		'loss'		: contrastive_loss	# absolute_difference, add_loss, compute_weighted_loss, cosine_distance, get_losses, get_regularization_loss, get_regularization_losses, get_total_loss, hinge_loss, huber_loss, log_loss, mean_pairwise_squared_error, mean_squared_error, sigmoid_cross_entropy, softmax_cross_entropy, sparse_softmax_cross_entropy
+	},
+	'fit' : {
+		'steps_per_epoch'	: 30,
+		'epochs'			: 1,
+		'validation_steps'	: 20
+	}
+})
+
+model_final = output[0]
+model_output = output[1]
+
 '''
-
-
-
+	Visualização de dados
+	Aqui, armazenamos as integrações para todos os rostos no conjunto de dados. Em seguida, usando o ** t-SNE ** e o ** PCA **, visualizamos as integrações que vão de 128 a 2 dimensões.
 '''
-	Saída bruta
-	Aqui nós criamos um modelo que gera a incorporação de uma face de entrada em vez da distância entre dois envoltórios, para que possamos mapear essas saídas.
-'''
-
-im_in1 = Input(shape = (200, 200, 4))
-#im_in2 = Input(shape=(200,200,4))
-
-feat_x1 = model_top(im_in1)
-#feat_x2 = model_top(im_in2)
-
-
-
-model_output = Model(inputs = im_in1, outputs = feat_x1)
-
-model_output.summary()
-
-adam = Adam(lr = 0.001)
-
-sgd = SGD(lr = 0.001, momentum = 0.9)
-
-model_output.compile(optimizer = adam, loss = contrastive_loss)
-
-cop = create_couple_rgbd(dir_val + '/')
-model_output.predict(cop[0].reshape((1, 200, 200, 4)))
-
-
-
-"""# Data visualization.
-Here we store the embeddings for all the faces in the dataset. Then, using both **t-SNE** and **PCA**, we visualize the embeddings going from 128 to 2 dimensions.
-"""
 
 def create_input_rgbd(file_path):
 	# print(folder)
@@ -547,11 +537,11 @@ def create_input_rgbd(file_path):
 			
 			for value in values:
 				
-				if value == "\n": continue  
+				if value == "\n": continue
 				
-				if int(value) > 1200 or int(value) == -1: value = 1200
+				if int(float(str(value))) > 1200 or int(float(str(value))) == -1: value = 1200
 				
-				mat[i][j] = float(int(value))
+				mat[i][j] = float(str(value))
 				
 				j += 1
 				j = j % 640
@@ -563,7 +553,7 @@ def create_input_rgbd(file_path):
 	mat_small = mat[140:340, 220:420]
 	mat_small = (mat_small - np.mean(mat_small)) / np.max(mat_small)
 	
-	img = Image.open(depth_file[:-5] + "c.bmp")
+	img = Image.open(depth_file.replace('.dat', '.bmp'))
 	img.thumbnail((640, 480))
 	img = np.asarray(img)
 	img = img[140:340, 220:420]
@@ -608,8 +598,7 @@ for folder in glob.glob(dir_train + '/*'):
 	
 	n += 1
 	
-	print(i)
-	print("Folder ", n, " of ", len(glob.glob(dir_train + '/*')))
+	print("Folder ", n, " of ", len(glob.glob(dir_train + '/*')), "with", i, "files")
 
 print(len(outputs))
 
@@ -617,6 +606,7 @@ print(len(outputs))
 outputs = np.asarray(outputs)
 outputs = outputs.reshape((-1,128))
 outputs.shape
+
 
 import sklearn
 from sklearn.manifold import TSNE
@@ -634,6 +624,7 @@ print(X_PCA.shape)
 #print(X_embedded.shape)
 
 import matplotlib.pyplot as plt
+import math
 
 color = 0
 for i in range(len((X_embedded))):
@@ -648,14 +639,108 @@ for i in range(len((X_embedded))):
 
 plt.show()
 
+
 '''
 	Distância entre duas imagens RGBD arbitrárias
 '''
 
-file1 = (dir_train + '/(2012-05-16)(154211)/015_1_d.dat')
-inp1 = create_input_rgbd(file1)
-file1 = (dir_train + '/(2012-05-16)(154211)/011_1_d.dat')
-inp2 = create_input_rgbd(file1)
 
-model_final.predict([inp1, inp2])
-#model_final.summary()
+def showResult(face, test):
+
+	face = Image.open(face)
+
+	testFaces = list(map(Image.open, [face[0] for face in test]))
+
+	plt.figure(figsize=(12, 10))
+	for i in range(len(testFaces)):
+		widths = [face.size[0], testFaces[i].size[0]]
+		heights = [face.size[1], testFaces[i].size[1]]
+
+		newImg = Image.new('RGB', (sum(widths), max(heights)))
+		newImg.paste(face, (0, 0))
+		newImg.paste(testFaces[i], (face.size[0], 0))
+		
+		if (len(test) != 1):
+			plt.subplot(math.ceil((len(test) + 1) / 5), 5, i + 1)
+		plt.subplots_adjust(hspace=0.75)
+		plt.imshow(newImg)
+		plt.title(test[i][1])
+		plt.axis('off')
+
+	plt.show()
+
+
+
+def validation():
+
+	people = glob.glob(dir_train + "/*") # Pega todas as pastas de treinamento
+
+	person = np.random.choice(people) # pega uma pessoa aleatoriamente para servir como modelo
+	face = np.random.choice(glob.glob(person + "/*.bmp")) # Pega uma imagem aleatória da pessoa 
+
+	people.remove(person) # remove a pessoa que será usada como modelo
+
+	
+	# Testa com a primeira imagem
+
+	faceTest = np.random.choice(glob.glob(person + "/*.bmp")) # Pega uma outra imagem aleatória da pessoa 
+	while face == faceTest: # Evita pegar a mesma imagem
+		faceTest = np.random.choice(glob.glob(person + "/*.bmp"))
+
+
+	showResult(face, [(faceTest, model_final.predict([create_input_rgbd(face.replace('.bmp', '.dat')), create_input_rgbd(faceTest.replace('.bmp', '.dat'))]))])
+
+	
+	# Testa com as imagens Incorretas 
+
+	tests = []
+	for person in people: # Faz o teste com todas as outras pessoas
+		faceTest = np.random.choice(glob.glob(person + "/*.bmp"))
+		tests.append((faceTest, model_final.predict([create_input_rgbd(face.replace('.bmp', '.dat')), create_input_rgbd(faceTest.replace('.bmp', '.dat'))])))
+
+	showResult(face, tests)
+
+
+
+def test():
+
+	for person in glob.glob(dir_val + "/*"):
+
+		face = np.random.choice(glob.glob(person + "/*.bmp")) # Pega uma imagem aleatória da pessoa 
+		
+		tests = []
+		for person in glob.glob(dir_train + "/*"): # Testa com as imagens de treinamento 
+			faceTest = np.random.choice(glob.glob(person + "/*.bmp"))
+			tests.append((faceTest, model_final.predict([create_input_rgbd(face.replace('.bmp', '.dat')), create_input_rgbd(faceTest.replace('.bmp', '.dat'))])))
+
+		showResult(face, tests)
+
+'''
+load()
+preProcessing()
+# 2/3 dos dados para treinamento e 1/3 para validação (tentar usar validação cruzada)
+training()
+'''
+validation()
+test()
+
+'''
+weights = 'pesi.h5'
+if os.path.exists(dir_model + '/' + weights):
+	if input('Você deseja utilizar um modelo de pesos salvo [Y/N]: ').upper() == 'Y':
+	
+		model_final.load_weights(dir_model + '/' + weights)
+	
+	else:
+
+		# aqui ficará o fluxo do programa
+		# Input
+		# pré-processamento
+		# treinar 75%
+		# validação 25%
+		# Show
+
+		if os.path.isdir(dir_model):
+			os.mkdir(dir_model)
+		model_final.save(dir_model + '/' + weights)
+'''
