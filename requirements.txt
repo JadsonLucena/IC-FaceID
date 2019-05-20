@@ -4,3 +4,4 @@ keras
 MatPlotLib
 sklearn
 requests
+cv2
