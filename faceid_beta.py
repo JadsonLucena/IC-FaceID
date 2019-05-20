@@ -22,7 +22,23 @@ Treinando a Rede Siamesa:
 
 
 
-import requests, zipfile, io, os
+import glob, requests, zipfile, io, os, cv2, sklearn, math
+import numpy as np
+from sklearn.manifold import TSNE
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+
+# https://keras.io/
+import keras
+from keras.models import Sequential, Model
+from keras.layers import Dense, Activation, Flatten, Dropout, Lambda, ELU, concatenate, GlobalAveragePooling2D, Input, BatchNormalization, SeparableConv2D, Subtract, concatenate
+from keras.activations import relu, softmax
+from keras.layers.convolutional import Convolution2D
+from keras.layers.pooling import MaxPooling2D, AveragePooling2D
+from keras.optimizers import SGD, RMSprop, Adagrad, Adadelta, Adam, Adamax, Nadam # Verificar o que é mais eficaz 
+from keras.regularizers import l2
+from keras import backend
+from keras.models import load_model
 
 
 def crawler(dirPath, link_list):
@@ -41,6 +57,9 @@ def crawler(dirPath, link_list):
 dir_train = 'faceid_train'
 dir_val = 'faceid_val'
 dir_model = 'model'
+fileType = '.bmp'
+depthFileType = '.pgm'
+faceCascade = cv2.CascadeClassifier("haarcascade_frontalface_alt.xml")
 
 
 # Dados de treinamento
@@ -54,164 +73,150 @@ dir_model = 'model'
 	Aqui nós criamos algumas funções que irão criar o par de entrada para o nosso modelo, ambos os pares corretos e errados. Eu criei funções para ter entrada somente de profundidade e entradas RGBD.
 '''
 
-import numpy as np
-import glob
-import matplotlib.pyplot as plt
-from PIL import Image
+def depthMatrix(depth_file):
 
-
-def depthMatrix(folder):
-
-	# print('Folder: ')
-	# print(folder)
-
-	mat = np.zeros((480, 640), dtype = 'float32') # Cria uma matriz de zeros
-	i = 0
-	j = 0
-	depth_file = np.random.choice(glob.glob(folder + "/*.dat")) # Pega um arquivo.dat aleatoriamente
-
+	mat = []
 	with open(depth_file) as file:
 
 		for line in file:
 
-			values = line.split('\t')
+			line = line.split('\t')
 
-			for value in values:
+			for i in range(len(line)):
 
-
-				if value == "\n":
-					continue
-
-				if int(float(str(value))) > 1200 or int(float(str(value))) == -1: # missing values
-					value = 1200
-
-				mat[i][j] = float(str(value))
-
-				j += 1
-				j = j % 640
-
-			i += 1
+				if line[i] == "\n":
+					del line[i]
+					# continue
+				elif int(float(str(line[i]))) > 1200 or int(float(str(line[i]))) == -1: # missing values
+					line[i] = float(1200.0)
+				else:
+					line[i] = float(str(line[i]))
+			
+			if (line != []):
+				mat.append(line)
 
 		mat = np.asarray(mat)
 
-	mat_small = mat[140:340, 220:420] # recorta a matriz, com paddings horizontais de 140 células e paddings verticais de 220 células
-	mat_small = (mat_small - np.mean(mat_small)) / np.max(mat_small) # normalização (Ps: encontrar uma forma de obter o valor máximo global desse tipo de arquivo, para que ele não venha pegr um máximo local e gerar normalizações em escalas diferentes para cada arquivo)
+	mat = (mat - np.mean(mat)) / np.max(mat) # normalização (Ps: encontrar uma forma de obter o valor máximo global desse tipo de arquivo, para que ele não venha pegr um máximo local e gerar normalizações em escalas diferentes para cada arquivo)
 
-	return {'mat_small' : mat_small, 'depth_file' : depth_file}
-
-
-def create_couple(file_path):
-
-	folder = np.random.choice(glob.glob(file_path + "*")) # Pega um dos arquivos aleatoriamente
-	while folder == "datasetalab": 
-		folder = np.random.choice(glob.glob(file_path + "*"))
+	return mat
 
 
-	mat_small = [0, 0]
-
-	for index in range(len(mat_small)):
-
-		mat_small[index] = depthMatrix(folder)['mat_small']
-
-		# plt.imshow(mat_small[index])
-		# plt.show()
-
-	return np.array(mat_small)
-
-
-# print(create_couple(dir_train + '/'))
-
-
-def create_couple_rgbd(file_path):
-
-	folder = np.random.choice(glob.glob(file_path + "*"))  # Pega um dos arquivos aleatoriamente
-	while folder == "datalab":
-		folder = np.random.choice(glob.glob(file_path + "*"))
-
-	full = [0, 0]
-
-	for index in range(len(full)):
-
-		mat = depthMatrix(folder)
-
-		img = Image.open(mat['depth_file'].replace('.dat', '.bmp')) # cria uma imagem .bmp
-		img.thumbnail((640, 480))
-		img = np.asarray(img)
-
-		if (index == 0):
-			img = img[140:340, 220:420] # recorta a matriz, com paddings horizontais de 140 células e paddings verticais de 220 células
-		else:
-			img = img[160:360, 240:440] # recorta a matriz, com paddings horizontais de (160, 122) células e paddings verticais de (240, 200) células
-
-
-		# plt.imshow(mat['mat_small'])
-		# plt.show()
-		# plt.imshow(img)
-		# plt.show()
-
-		full[index] = np.zeros((200, 200, 4)) # Cria uma matriz de zeros com 4 dimensões
-		full[index][:, :, :3] = img[:, :, :3] # Insere valores até a terceira dimensão
-		full[index][: , :, 3] = mat['mat_small'] # Insere valores da profundidade na quarta dimensão
-
-	return np.array(full)
-
-
-# create_couple_rgbd(dir_val + '/')
-
-
-def create_wrong(file_path):
-
-	mat_small = [0, 0]
-
-	for index in range(len(mat_small)):
-
-		folder = np.random.choice(glob.glob(file_path + "*")) # Pega um dos arquivos aleatoriamente
-		while folder == "datalab": 
-			folder = np.random.choice(glob.glob(file_path + "*"))
-
-		mat_small[index] = depthMatrix(folder)['mat_small']
-
-		# plt.imshow(mat_small[index])
-		# plt.show()
-
-	return np.array(mat_small)
-
-
-#create_wrong(dir_train + '/')
-
-
-def create_wrong_rgbd(file_path):
-
-	full = [0, 0]
-
-	for index in range(len(full)):
-
-		folder = np.random.choice(glob.glob(file_path + "*"))  # Pega um dos arquivos aleatoriamente
-		while folder == "datalab":
-			folder = np.random.choice(glob.glob(file_path + "*"))
-
-		mat = depthMatrix(folder)
-
-		img = Image.open(mat['depth_file'].replace('.dat', '.bmp')) # cria uma imagem .bmp
-		img.thumbnail((640, 480))
-		img = np.asarray(img)
-		img = img[140:340, 220:420] # recorta a matriz, com paddings horizontais de 140 células e paddings verticais de 220 células
-
-		# plt.imshow(mat['mat_small'])
-		# plt.show()
-		# plt.imshow(img)
-		# plt.show()
-
-		full[index] = np.zeros((200, 200, 4)) # Cria uma matriz de zeros com 4 dimensões
-		full[index][:, :, :3] = img[:, :, :3] # Insere valores até a terceira dimensão
-		full[index][: , :, 3] = mat['mat_small'] # Insere valores na quarta dimensão
-
-	return np.array(full)
+def rgbFromDecimal(rgb):
+	# return (rgb[0] + 1) + (256*rgb[1]) + (256*256*rgb[2])
+	return ((rgb[0] + 1) + (256*rgb[1]) + (256*256*rgb[2])) / (256*256*256) # Nomalizado
 
 
 
-#create_wrong_rgbd(dir_val + '/')[0].shape
+def create_input_rgbd(file):
 
+	img = cv2.imread(file)
+		
+	depth = cv2.imread(file.replace(fileType, depthFileType))
+	depth = cv2.resize(depth, (img.shape[1], img.shape[0]))
+
+	face = faceCascade.detectMultiScale(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), scaleFactor = 1.09, minNeighbors = 1, minSize=(120, 120), flags = cv2.CASCADE_SCALE_IMAGE)[0]
+	# face = (0,0,0,0)
+	# while True:
+	# 	try:
+	# 		face = faceCascade.detectMultiScale(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), scaleFactor = 1.1, minNeighbors = 1, minSize=(120, 120), flags = cv2.CASCADE_SCALE_IMAGE)[0]
+	# 		break
+	# 	except:
+	# 		continue
+
+	# newImg = img
+	# margin = 50
+	# cv2.rectangle(newImg, (face[0]-margin, face[1]-margin), (face[0]+face[2]+margin, face[1]+face[3]+margin), (0, 255, 0), 2)
+	# cv2.imshow("Faces Detected", newImg)
+	# cv2.waitKey(0)
+
+	img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+	depth = cv2.cvtColor(depth, cv2.COLOR_BGR2RGB)
+
+	margin = 50		
+	img = img[face[1] - margin : face[1] + face[3] + margin, face[0] - margin : face[0] + face[2] + margin]
+	depth = depth[face[1] - margin : face[1] + face[3] + margin, face[0] - margin : face[0] + face[2] + margin]
+
+
+	img = cv2.resize(img, (200, 200))
+	depth = cv2.resize(depth, (200, 200))
+
+
+	depth = np.asarray(list(map(lambda line :  list(map(rgbFromDecimal, line)), depth))) # converte os pixels em rgb para decimal
+
+
+	RGBD = np.zeros((200, 200, 4))
+	RGBD[:, :, :3] = img # Insere valores até a terceira dimensão
+	RGBD[: , :, 3] = depth # Insere valores de profundidade na quarta dimensão com valores de cada pixel convertidos de RGB para decimal
+
+	return RGBD
+
+
+
+def create_rgbd(person, dir_path, historic = []):
+
+	folder = ''
+
+	if (person == 'same'):
+		tmp = np.random.choice(glob.glob(dir_path + "*")) # Pega uma das pastas aleatoriamente
+		while tmp == "datalab": 
+			tmp = np.random.choice(glob.glob(dir_path + "*"))
+		folder = tmp
+
+	# RGBD = np.zeros((2, 200, 200, 4)) # Cria 2 matrizez de zeros 200 X 200 com 4 dimensões
+	RGBD = []
+
+	for _ in range(2): # Cria 2 matrizez de zeros 200 X 200 com 4 dimensões
+
+		if (person == 'different'):
+			tmp = np.random.choice(glob.glob(dir_path + "*")) # Pega uma das pastas aleatoriamente
+			while tmp == folder or tmp == "datalab": 
+				tmp = np.random.choice(glob.glob(dir_path + "*"))
+			folder = tmp
+
+		file = np.random.choice(glob.glob(folder + "/*"+ fileType)) # Pega um dos arquivos aleatoriamente
+		while file in historic:
+			file = np.random.choice(glob.glob(folder + "/*"+ fileType))
+		
+		historic += file
+
+		RGBD.append(create_input_rgbd(file))
+		
+		# img = cv2.imread(file)
+		
+		# depth = cv2.imread(file.replace(fileType, depthFileType))
+		# depth = cv2.resize(depth, (img.shape[1], img.shape[0]))
+
+		
+		# face = faceCascade.detectMultiScale(
+		# 	cv2.cvtColor(img, cv2.COLOR_BGR2GRAY),
+		# 	scaleFactor = 1.1,
+		# 	minNeighbors = 1,
+		# 	minSize = (120, 120),
+		# 	flags = cv2.CASCADE_SCALE_IMAGE
+		# )[0]
+
+
+		# margin = 50		
+		# img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)[face[1] - margin : face[1] + face[3] + margin, face[0] - margin : face[0] + face[2] + margin]
+		# depth = cv2.cvtColor(depth, cv2.COLOR_BGR2RGB)[face[1] - margin : face[1] + face[3] + margin, face[0] - margin : face[0] + face[2] + margin]
+
+
+		# img = cv2.resize(img, (200, 200))
+		# depth = cv2.resize(depth, (200, 200))
+
+
+		# depth = np.asarray(list(map(lambda line :  list(map(rgbFromDecimal, line)), image))) # converte os pixels em rgb para decimal
+
+
+		# RGBD[index][:, :, :3] = img # Insere valores até a terceira dimensão
+		# RGBD[index][: , :, 3] = depth # Insere valores de profundidade na quarta dimensão com valores de cada pixel convertidos de RGB para decimal
+
+	return {'RGBD' : np.array(RGBD), 'historic' : historic}
+
+
+# create_rgbd('same', dir_val + '/')['RGBD'][0].shape
+# create_rgbd('different', dir_val + '/')['RGBD'][0].shape
 
 
 
@@ -220,19 +225,6 @@ def create_wrong_rgbd(file_path):
 	Elaboração de redes (rede convolucional siamês baseada na arquitetura SqueezeNet com perda contrastiva)
 	Agora nós criamos a rede. Primeiro criamos manualmente * a perda contrastiva *, depois definimos a arquitetura da rede a partir da arquitetura SqueezeNet, e depois a usamos como uma rede siamesa para incorporar faces em um manifold. (a rede, por enquanto, é muito grande e pode ser muito otimizada, mas eu só queria mostrar uma prova de conceito)
 '''
-
-# https://keras.io/
-import keras
-from keras.models import Sequential, Model
-from keras.layers import Dense, Activation, Flatten, Dropout, Lambda, ELU, concatenate, GlobalAveragePooling2D, Input, BatchNormalization, SeparableConv2D, Subtract, concatenate
-from keras.activations import relu, softmax
-from keras.layers.convolutional import Convolution2D
-from keras.layers.pooling import MaxPooling2D, AveragePooling2D
-from keras.optimizers import SGD, RMSprop, Adagrad, Adadelta, Adam, Adamax, Nadam # Verificar o que é mais eficaz 
-from keras.regularizers import l2
-from keras import backend
-from keras.models import load_model
-
 
 def euclidean_distance(inputs):
 	
@@ -244,8 +236,6 @@ def euclidean_distance(inputs):
 
 
 def contrastive_loss(y_true, y_pred):
-
-	print('entrouuuuu')
 
 	margin = 1.
 
@@ -271,10 +261,11 @@ def fire(x, squeeze = 16, expand = 64):
 
 
 # Fase de aprendizagem: Nós escrevemos os geradores que darão ao nosso modelo lotes de dados (manifold) para treinar, então nós executamos o treinamento
-def generatorBatch(batch_size, file_path):
+def generatorBatch(batch_size, dir_path):
 
 		while True:
 			
+			historic = []
 			X = []
 			y = []
 			switch = True
@@ -282,12 +273,23 @@ def generatorBatch(batch_size, file_path):
 			for _ in range(batch_size):
 
 				if switch:
-					# print("correct")
-					X.append(create_couple_rgbd(file_path + '/').reshape((2,200,200,4)))
+					# print("same")
+
+					same_rgbd = create_rgbd('same', dir_path + '/', historic)
+
+					historic = same_rgbd['historic']
+
+					X.append(same_rgbd['RGBD'].reshape((2,200,200,4)))
 					y.append(np.array([0.]))
+
 				else:
-					# print("wrong")
-					X.append(create_wrong_rgbd(file_path + '/').reshape((2,200,200,4)))
+					# print("different")
+
+					different_rgbd = create_rgbd('different', dir_path + '/', historic)
+
+					historic = different_rgbd['historic']
+
+					X.append(different_rgbd['RGBD'].reshape((2,200,200,4)))
 					y.append(np.array([1.]))
 				
 				switch = not switch
@@ -408,10 +410,10 @@ def siameseNetworkSqueezeNet(config):
 
 
 	''' Alguns testes de modelo '''
-	cop = create_couple_rgbd(dir_val + '/')
+	cop = create_rgbd('same', dir_val + '/')['RGBD']
 	model_final.evaluate([cop[0].reshape((1, 200, 200, 4)), cop[1].reshape((1, 200, 200, 4))], np.array([0.]))
 
-	cop = create_wrong_rgbd(dir_val + '/')
+	cop = create_rgbd('different', dir_val + '/')['RGBD']
 	model_final.predict([cop[0].reshape((1, 200, 200, 4)), cop[1].reshape((1, 200, 200, 4))])
 
 
@@ -494,7 +496,7 @@ def siameseNetworkSqueezeNet(config):
 
 	model_output.compile(optimizer = config['compile']['optimizer'], loss = config['compile']['loss']) # Saida da rede siamesa
 
-	cop = create_couple_rgbd(dir_val + '/')
+	cop = create_rgbd('same', dir_val + '/')['RGBD']
 	model_output.predict(cop[0].reshape((1, 200, 200, 4)))
 
 	return [model_final, model_output]
@@ -508,7 +510,7 @@ output = siameseNetworkSqueezeNet({
 		'loss'		: contrastive_loss	# absolute_difference, add_loss, compute_weighted_loss, cosine_distance, get_losses, get_regularization_loss, get_regularization_losses, get_total_loss, hinge_loss, huber_loss, log_loss, mean_pairwise_squared_error, mean_squared_error, sigmoid_cross_entropy, softmax_cross_entropy, sparse_softmax_cross_entropy
 	},
 	'fit' : {
-		'steps_per_epoch'	: 30,
+		'steps_per_epoch'	: 5,
 		'epochs'			: 1,
 		'validation_steps'	: 20
 	}
@@ -522,62 +524,6 @@ model_output = output[1]
 	Aqui, armazenamos as integrações para todos os rostos no conjunto de dados. Em seguida, usando o ** t-SNE ** e o ** PCA **, visualizamos as integrações que vão de 128 a 2 dimensões.
 '''
 
-def create_input_rgbd(file_path):
-	# print(folder)
-	mat = np.zeros((480, 640), dtype='float32')
-	i = 0
-	j = 0
-	depth_file = file_path
-	
-	with open(depth_file) as file:
-		
-		for line in file:
-			
-			values = line.split('\t')
-			
-			for value in values:
-				
-				if value == "\n": continue
-				
-				if int(float(str(value))) > 1200 or int(float(str(value))) == -1: value = 1200
-				
-				mat[i][j] = float(str(value))
-				
-				j += 1
-				j = j % 640
-
-			i += 1
-
-		mat = np.asarray(mat)
-	
-	mat_small = mat[140:340, 220:420]
-	mat_small = (mat_small - np.mean(mat_small)) / np.max(mat_small)
-	
-	img = Image.open(depth_file.replace('.dat', '.bmp'))
-	img.thumbnail((640, 480))
-	img = np.asarray(img)
-	img = img[140:340, 220:420]
-	
-	'''
-	plt.figure(figsize = (8, 8))
-	plt.grid(True)
-	plt.xticks([])
-	plt.yticks([])
-	plt.imshow(mat_small)
-	plt.show()
-	plt.figure(figsize = (8, 8))
-	plt.grid(True)
-	plt.xticks([])
-	plt.yticks([])
-	plt.imshow(img)
-	plt.show()
-	'''
-
-	full = np.zeros((200, 200, 4))
-	full[:, :, :3] = img[:, :, :3]
-	full[:, :, 3] = mat_small
-
-	return np.array([full])
 
 '''
 	Visualização de dados (algoritmo t-SNE)
@@ -589,7 +535,7 @@ for folder in glob.glob(dir_train + '/*'):
 	
 	i = 0
 	
-	for file in glob.glob(folder + '/*.dat'):
+	for file in glob.glob(folder + "/*" + fileType):
 		
 		outputs.append(model_output.predict(create_input_rgbd(file).reshape((1, 200, 200, 4))))
 		
@@ -608,23 +554,17 @@ outputs = outputs.reshape((-1,128))
 outputs.shape
 
 
-import sklearn
-from sklearn.manifold import TSNE
+
+
 
 X_embedded = TSNE(2).fit_transform(outputs)
 X_embedded.shape
-
-import numpy as np
-from sklearn.decomposition import PCA
 
 X_PCA = PCA(3).fit_transform(outputs)
 print(X_PCA.shape)
 
 #X_embedded = TSNE(2).fit_transform(X_PCA)
 #print(X_embedded.shape)
-
-import matplotlib.pyplot as plt
-import math
 
 color = 0
 for i in range(len((X_embedded))):
@@ -676,27 +616,27 @@ def validation():
 	people = glob.glob(dir_train + "/*") # Pega todas as pastas de treinamento
 
 	person = np.random.choice(people) # pega uma pessoa aleatoriamente para servir como modelo
-	face = np.random.choice(glob.glob(person + "/*.bmp")) # Pega uma imagem aleatória da pessoa 
+	face = np.random.choice(glob.glob(person + "/*" + fileType)) # Pega uma imagem aleatória da pessoa 
 
 	people.remove(person) # remove a pessoa que será usada como modelo
 
 	
 	# Testa com a primeira imagem
 
-	faceTest = np.random.choice(glob.glob(person + "/*.bmp")) # Pega uma outra imagem aleatória da pessoa 
-	while face == faceTest: # Evita pegar a mesma imagem
-		faceTest = np.random.choice(glob.glob(person + "/*.bmp"))
+	faceTest = np.random.choice(glob.glob(person + "/*" + fileType)) # Pega uma outra imagem aleatória da pessoa 
+	while faceTest == face: # Evita pegar a mesma imagem
+		faceTest = np.random.choice(glob.glob(person + "/*" + fileType))
 
 
-	showResult(face, [(faceTest, model_final.predict([create_input_rgbd(face.replace('.bmp', '.dat')), create_input_rgbd(faceTest.replace('.bmp', '.dat'))]))])
+	showResult(face, [(faceTest, model_final.predict([create_input_rgbd(face).reshape((1, 200, 200, 4)), create_input_rgbd(faceTest).reshape((1, 200, 200, 4))]))])
 
 	
 	# Testa com as imagens Incorretas 
 
 	tests = []
 	for person in people: # Faz o teste com todas as outras pessoas
-		faceTest = np.random.choice(glob.glob(person + "/*.bmp"))
-		tests.append((faceTest, model_final.predict([create_input_rgbd(face.replace('.bmp', '.dat')), create_input_rgbd(faceTest.replace('.bmp', '.dat'))])))
+		faceTest = np.random.choice(glob.glob(person + "/*" + fileType))
+		tests.append((faceTest, model_final.predict([create_input_rgbd(face).reshape((1, 200, 200, 4)), create_input_rgbd(faceTest).reshape((1, 200, 200, 4))])))
 
 	showResult(face, tests)
 
@@ -706,12 +646,12 @@ def test():
 
 	for person in glob.glob(dir_val + "/*"):
 
-		face = np.random.choice(glob.glob(person + "/*.bmp")) # Pega uma imagem aleatória da pessoa 
+		face = np.random.choice(glob.glob(person + "/*" + fileType)) # Pega uma imagem aleatória da pessoa 
 		
 		tests = []
 		for person in glob.glob(dir_train + "/*"): # Testa com as imagens de treinamento 
-			faceTest = np.random.choice(glob.glob(person + "/*.bmp"))
-			tests.append((faceTest, model_final.predict([create_input_rgbd(face.replace('.bmp', '.dat')), create_input_rgbd(faceTest.replace('.bmp', '.dat'))])))
+			faceTest = np.random.choice(glob.glob(person + "/*" + fileType))
+			tests.append((faceTest, model_final.predict([create_input_rgbd(face).reshape((1, 200, 200, 4)), create_input_rgbd(faceTest).reshape((1, 200, 200, 4))])))
 
 		showResult(face, tests)
 
