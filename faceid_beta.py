@@ -37,8 +37,9 @@ from keras.layers.convolutional import Convolution2D
 from keras.layers.pooling import MaxPooling2D, AveragePooling2D
 from keras.optimizers import SGD, RMSprop, Adagrad, Adadelta, Adam, Adamax, Nadam # Verificar o que é mais eficaz 
 from keras.regularizers import l2
-from keras import backend
+from keras import backend as K
 from keras.models import load_model
+from keras.models import model_from_json
 
 
 def crawler(dirPath, link_list):
@@ -58,7 +59,7 @@ dir_train = 'faceid_train'
 dir_val = 'faceid_val'
 dir_model = 'model'
 fileType = '.bmp'
-depthFileType = '.pgm'
+depthFileType = '.jpg'
 faceCascade = cv2.CascadeClassifier("haarcascade_frontalface_alt.xml")
 
 
@@ -73,77 +74,41 @@ faceCascade = cv2.CascadeClassifier("haarcascade_frontalface_alt.xml")
 	Aqui nós criamos algumas funções que irão criar o par de entrada para o nosso modelo, ambos os pares corretos e errados. Eu criei funções para ter entrada somente de profundidade e entradas RGBD.
 '''
 
-def depthMatrix(depth_file):
-
-	mat = []
-	with open(depth_file) as file:
-
-		for line in file:
-
-			line = line.split('\t')
-
-			for i in range(len(line)):
-
-				if line[i] == "\n":
-					del line[i]
-					# continue
-				elif int(float(str(line[i]))) > 1200 or int(float(str(line[i]))) == -1: # missing values
-					line[i] = float(1200.0)
-				else:
-					line[i] = float(str(line[i]))
-			
-			if (line != []):
-				mat.append(line)
-
-		mat = np.asarray(mat)
-
-	mat = (mat - np.mean(mat)) / np.max(mat) # normalização (Ps: encontrar uma forma de obter o valor máximo global desse tipo de arquivo, para que ele não venha pegr um máximo local e gerar normalizações em escalas diferentes para cada arquivo)
-
-	return mat
-
-
 def rgbFromDecimal(rgb):
 	# return (rgb[0] + 1) + (256*rgb[1]) + (256*256*rgb[2])
-	return ((rgb[0] + 1) + (256*rgb[1]) + (256*256*rgb[2])) / (256*256*256) # Nomalizado
+	return (round((rgb[0] / 255) * 256) + (256*rgb[1]) + (256*256*rgb[2])) / (256*256*256) # Nomalizado
 
 
+def create_input_rgbd(filePath):
 
-def create_input_rgbd(file):
-
-	img = cv2.imread(file)
+	img = cv2.imread(filePath)
 		
-	depth = cv2.imread(file.replace(fileType, depthFileType))
+	depth = cv2.imread(filePath.replace(fileType, depthFileType))
 	depth = cv2.resize(depth, (img.shape[1], img.shape[0]))
 
-	face = faceCascade.detectMultiScale(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), scaleFactor = 1.09, minNeighbors = 1, minSize=(120, 120), flags = cv2.CASCADE_SCALE_IMAGE)[0]
-	# face = (0,0,0,0)
-	# while True:
-	# 	try:
-	# 		face = faceCascade.detectMultiScale(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), scaleFactor = 1.1, minNeighbors = 1, minSize=(120, 120), flags = cv2.CASCADE_SCALE_IMAGE)[0]
-	# 		break
-	# 	except:
-	# 		continue
+	margin = 50
 
-	# newImg = img
-	# margin = 50
-	# cv2.rectangle(newImg, (face[0]-margin, face[1]-margin), (face[0]+face[2]+margin, face[1]+face[3]+margin), (0, 255, 0), 2)
-	# cv2.imshow("Faces Detected", newImg)
-	# cv2.waitKey(0)
+	facialCoordinates = (0 + margin, 0 + margin, img.shape[1] - margin, img.shape[0] - margin);
+	try:
+	
+		facialCoordinates = faceCascade.detectMultiScale(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), scaleFactor = 1.09, minNeighbors = 1, minSize=(120, 120), flags = cv2.CASCADE_SCALE_IMAGE)[0]
+	
+	except:
+
+		print('\nNão foi possível identificar onde está o rotos: ' + filePath)
+
 
 	img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 	depth = cv2.cvtColor(depth, cv2.COLOR_BGR2RGB)
 
-	margin = 50		
-	img = img[face[1] - margin : face[1] + face[3] + margin, face[0] - margin : face[0] + face[2] + margin]
-	depth = depth[face[1] - margin : face[1] + face[3] + margin, face[0] - margin : face[0] + face[2] + margin]
+	img = img[facialCoordinates[1] - margin : facialCoordinates[1] + facialCoordinates[3] + margin, facialCoordinates[0] - margin : facialCoordinates[0] + facialCoordinates[2] + margin]
+	depth = depth[facialCoordinates[1] - margin : facialCoordinates[1] + facialCoordinates[3] + margin, facialCoordinates[0] - margin : facialCoordinates[0] + facialCoordinates[2] + margin]
 
 
 	img = cv2.resize(img, (200, 200))
 	depth = cv2.resize(depth, (200, 200))
 
-
 	depth = np.asarray(list(map(lambda line :  list(map(rgbFromDecimal, line)), depth))) # converte os pixels em rgb para decimal
-
 
 	RGBD = np.zeros((200, 200, 4))
 	RGBD[:, :, :3] = img # Insere valores até a terceira dimensão
@@ -153,6 +118,7 @@ def create_input_rgbd(file):
 
 
 
+rgbdPool = {}
 def create_rgbd(person, dir_path, historic = []):
 
 	folder = ''
@@ -174,43 +140,17 @@ def create_rgbd(person, dir_path, historic = []):
 				tmp = np.random.choice(glob.glob(dir_path + "*"))
 			folder = tmp
 
-		file = np.random.choice(glob.glob(folder + "/*"+ fileType)) # Pega um dos arquivos aleatoriamente
-		while file in historic:
-			file = np.random.choice(glob.glob(folder + "/*"+ fileType))
+		filePath = np.random.choice(glob.glob(folder + "/*"+ fileType)) # Pega um dos arquivos aleatoriamente
+		while filePath in historic:
+			filePath = np.random.choice(glob.glob(folder + "/*"+ fileType))
 		
-		historic += file
+		historic += filePath
 
-		RGBD.append(create_input_rgbd(file))
-		
-		# img = cv2.imread(file)
-		
-		# depth = cv2.imread(file.replace(fileType, depthFileType))
-		# depth = cv2.resize(depth, (img.shape[1], img.shape[0]))
+		if (not (filePath in rgbdPool)):
+			rgbdPool[filePath] = create_input_rgbd(filePath)
 
-		
-		# face = faceCascade.detectMultiScale(
-		# 	cv2.cvtColor(img, cv2.COLOR_BGR2GRAY),
-		# 	scaleFactor = 1.1,
-		# 	minNeighbors = 1,
-		# 	minSize = (120, 120),
-		# 	flags = cv2.CASCADE_SCALE_IMAGE
-		# )[0]
+		RGBD.append(rgbdPool[filePath])
 
-
-		# margin = 50		
-		# img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)[face[1] - margin : face[1] + face[3] + margin, face[0] - margin : face[0] + face[2] + margin]
-		# depth = cv2.cvtColor(depth, cv2.COLOR_BGR2RGB)[face[1] - margin : face[1] + face[3] + margin, face[0] - margin : face[0] + face[2] + margin]
-
-
-		# img = cv2.resize(img, (200, 200))
-		# depth = cv2.resize(depth, (200, 200))
-
-
-		# depth = np.asarray(list(map(lambda line :  list(map(rgbFromDecimal, line)), image))) # converte os pixels em rgb para decimal
-
-
-		# RGBD[index][:, :, :3] = img # Insere valores até a terceira dimensão
-		# RGBD[index][: , :, 3] = depth # Insere valores de profundidade na quarta dimensão com valores de cada pixel convertidos de RGB para decimal
 
 	return {'RGBD' : np.array(RGBD), 'historic' : historic}
 
@@ -231,7 +171,7 @@ def euclidean_distance(inputs):
 	assert len(inputs) == 2, 'Euclidean distance needs 2 inputs, %d given' % len(inputs)
 	u, v = inputs
 	
-	return backend.sqrt(backend.sum((backend.square(u - v)), axis=1, keepdims=True))
+	return K.sqrt(K.sum((K.square(u - v)), axis=1, keepdims=True))
         
 
 
@@ -239,8 +179,8 @@ def contrastive_loss(y_true, y_pred):
 
 	margin = 1.
 
-	return backend.mean((1. - y_true) * backend.square(y_pred) + y_true * backend.square(backend.maximum(margin - y_pred, 0.)))
-	# return backend.mean( backend.square(y_pred) )
+	return K.mean((1. - y_true) * K.square(y_pred) + y_true * K.square(K.maximum(margin - y_pred, 0.)))
+	# return K.mean( K.square(y_pred) )
 
 
 # Expande as dimenções da convolução
@@ -263,44 +203,44 @@ def fire(x, squeeze = 16, expand = 64):
 # Fase de aprendizagem: Nós escrevemos os geradores que darão ao nosso modelo lotes de dados (manifold) para treinar, então nós executamos o treinamento
 def generatorBatch(batch_size, dir_path):
 
-		while True:
+	while True:
+		
+		historic = []
+		X = []
+		y = []
+		switch = True
+		
+		for _ in range(batch_size):
+
+			if switch:
+				# print("same")
+
+				same_rgbd = create_rgbd('same', dir_path + '/', historic)
+
+				historic = same_rgbd['historic']
+
+				X.append(same_rgbd['RGBD'].reshape((2,200,200,4)))
+				y.append(np.array([0.]))
+
+			else:
+				# print("different")
+
+				different_rgbd = create_rgbd('different', dir_path + '/', historic)
+
+				historic = different_rgbd['historic']
+
+				X.append(different_rgbd['RGBD'].reshape((2,200,200,4)))
+				y.append(np.array([1.]))
 			
-			historic = []
-			X = []
-			y = []
-			switch = True
-			
-			for _ in range(batch_size):
+			switch = not switch
 
-				if switch:
-					# print("same")
+		X = np.asarray(X)
+		y = np.asarray(y)
+		
+		XX1 = X[0, :]
+		XX2 = X[1, :]
 
-					same_rgbd = create_rgbd('same', dir_path + '/', historic)
-
-					historic = same_rgbd['historic']
-
-					X.append(same_rgbd['RGBD'].reshape((2,200,200,4)))
-					y.append(np.array([0.]))
-
-				else:
-					# print("different")
-
-					different_rgbd = create_rgbd('different', dir_path + '/', historic)
-
-					historic = different_rgbd['historic']
-
-					X.append(different_rgbd['RGBD'].reshape((2,200,200,4)))
-					y.append(np.array([1.]))
-				
-				switch = not switch
-
-			X = np.asarray(X)
-			y = np.asarray(y)
-			
-			XX1 = X[0, :]
-			XX2 = X[1, :]
-
-			yield [ X[:, 0], X[:, 1] ], y
+		yield [ X[:, 0], X[:, 1] ], y
 
 
 
@@ -369,7 +309,7 @@ def siameseNetworkSqueezeNet(config):
 	x1 = Dropout(0.2)(x1)
 	#x1 = BatchNormalization()(x1)
 	feat_x = Dense(128, activation = "linear")(x1)
-	feat_x = Lambda(lambda  x: backend.l2_normalize(x, axis = 1))(feat_x)
+	feat_x = Lambda(lambda  x: K.l2_normalize(x, axis = 1))(feat_x)
 
 
 	model_top = Model(inputs = [im_in], outputs = feat_x)
@@ -392,20 +332,18 @@ def siameseNetworkSqueezeNet(config):
 
 	model_final.compile(optimizer = config['compile']['optimizer'], loss = config['compile']['loss']) # (nome do otimizador, nome da função objetivo) Configura o modelo para treinamento.
 
+
 	'''
 	Fase de aprendizagem
 	Nós escrevemos os geradores que darão ao nosso modelo lotes de dados para treinar, então nós executamos o treinamento
 	'''
-
-	
-
 
 	train_gen = generatorBatch(16, dir_train)
 	val_gen = generatorBatch(4, dir_val)
 
 
 	# Treina o modelo em dados gerados lote a lote por um gerador
-	outputs = model_final.fit_generator(train_gen, steps_per_epoch = config['fit']['steps_per_epoch'], epochs = config['fit']['epochs'], validation_data = val_gen, validation_steps = config['fit']['validation_steps'])
+	model_final.fit_generator(train_gen, steps_per_epoch = config['fit']['steps_per_epoch'], epochs = config['fit']['epochs'], validation_data = val_gen, validation_steps = config['fit']['validation_steps'])
 
 
 
@@ -417,64 +355,6 @@ def siameseNetworkSqueezeNet(config):
 	model_final.predict([cop[0].reshape((1, 200, 200, 4)), cop[1].reshape((1, 200, 200, 4))])
 
 
-	'''
-	Salvando e carregando o modelo
-	As próximas células mostram como salvar as ponderações do modelo e enviá-las para o seu Drive e, em seguida, como recuperar esses pesos do Drive para carregar um modelo pré-treinado.
-	'''
-
-	# model_final.save("faceid_big_rgbd_2.h5")
-
-	'''
-	from google.colab import files
-
-	# Install the PyDrive wrapper & import libraries.
-	# This only needs to be done once in a notebook.
-	from pydrive.auth import GoogleAuth
-	from pydrive.drive import GoogleDrive
-	from google.colab import auth
-	from oauth2client.client import GoogleCredentials
-
-	# Authenticate and create the PyDrive client.
-	# This only needs to be done once in a notebook.
-	auth.authenticate_user()
-	gauth = GoogleAuth()
-	gauth.credentials = GoogleCredentials.get_application_default()
-	drive = GoogleDrive(gauth)
-
-	# Create & upload a file.
-	uploaded = drive.CreateFile({'title': 'faceid_big_rgbd.h5'})
-	uploaded.SetContentFile('faceid_big_rgbd.h5')
-	uploaded.Upload()
-	print('Uploaded file with ID {}'.format(uploaded.get('id')))
-
-	# Install the PyDrive wrapper & import libraries.
-	# This only needs to be done once per notebook.
-	from pydrive.auth import GoogleAuth
-	from pydrive.drive import GoogleDrive
-	from google.colab import auth
-	from oauth2client.client import GoogleCredentials
-
-	# Authenticate and create the PyDrive client.
-	# This only needs to be done once per notebook.
-	auth.authenticate_user()
-	gauth = GoogleAuth()
-	gauth.credentials = GoogleCredentials.get_application_default()
-	drive = GoogleDrive(gauth)
-
-	# Download a file based on its file ID.
-	#
-	# A file ID looks like: laggVyWshwcyP6kEI-y_W3P8D26sz
-	file_id = '17Lo_ZxYcKO751iYs4XRyIvVXME8Lyc75'
-	downloaded = drive.CreateFile({'id': file_id})
-	#print('Downloaded content "{}"'.format(downloaded.GetContentString()))
-
-	downloaded.GetContentFile('pesi.h5')
-	'''
-
-
-
-
-
 
 
 	'''
@@ -482,13 +362,11 @@ def siameseNetworkSqueezeNet(config):
 		Aqui nós criamos um modelo que gera a incorporação de uma face de entrada em vez da distância entre dois envoltórios, para que possamos mapear essas saídas.
 	'''
 
-	im_in1 = Input(shape = (200, 200, 4))
+	# im_in1 = Input(shape = (200, 200, 4))
 	#im_in2 = Input(shape=(200,200,4))
 
-	feat_x1 = model_top(im_in1)
+	# feat_x1 = model_top(im_in1)
 	#feat_x2 = model_top(im_in2)
-
-
 
 	model_output = Model(inputs = im_in1, outputs = feat_x1)
 
@@ -496,113 +374,88 @@ def siameseNetworkSqueezeNet(config):
 
 	model_output.compile(optimizer = config['compile']['optimizer'], loss = config['compile']['loss']) # Saida da rede siamesa
 
-	cop = create_rgbd('same', dir_val + '/')['RGBD']
+	# cop = create_rgbd('same', dir_val + '/')['RGBD']
 	model_output.predict(cop[0].reshape((1, 200, 200, 4)))
 
-	return [model_final, model_output]
 
+	'''
+		Visualização de dados
+		Aqui, armazenamos as integrações para todos os rostos no conjunto de dados. Em seguida, usando o ** t-SNE ** e o ** PCA **, visualizamos as integrações que vão de 128 a 2 dimensões.
 
+		Visualização de dados (algoritmo t-SNE)
+	'''
 
-output = siameseNetworkSqueezeNet({
-	'compile' : {
-		'optimizer'	: Adam(lr = 0.001),	# SGD, RMSprop, Adagrad, Adadelta, Adamax, Nadam
-		# 'optimizer'	: SGD(lr = 0.001, momentum = 0.9), # pode ser usado no lugar do adam
-		'loss'		: contrastive_loss	# absolute_difference, add_loss, compute_weighted_loss, cosine_distance, get_losses, get_regularization_loss, get_regularization_losses, get_total_loss, hinge_loss, huber_loss, log_loss, mean_pairwise_squared_error, mean_squared_error, sigmoid_cross_entropy, softmax_cross_entropy, sparse_softmax_cross_entropy
-	},
-	'fit' : {
-		'steps_per_epoch'	: 5,
-		'epochs'			: 1,
-		'validation_steps'	: 20
-	}
-})
-
-model_final = output[0]
-model_output = output[1]
-
-'''
-	Visualização de dados
-	Aqui, armazenamos as integrações para todos os rostos no conjunto de dados. Em seguida, usando o ** t-SNE ** e o ** PCA **, visualizamos as integrações que vão de 128 a 2 dimensões.
-'''
-
-
-'''
-	Visualização de dados (algoritmo t-SNE)
-'''
-
-outputs = []
-n = 0
-for folder in glob.glob(dir_train + '/*'):
-	
-	i = 0
-	
-	for file in glob.glob(folder + "/*" + fileType):
+	outputs = []
+	n = 0
+	for folder in glob.glob(dir_train + '/*'):
 		
-		outputs.append(model_output.predict(create_input_rgbd(file).reshape((1, 200, 200, 4))))
+		i = 0
 		
-		i += 1
-	
-	
-	n += 1
-	
-	print("Folder ", n, " of ", len(glob.glob(dir_train + '/*')), "with", i, "files")
+		for file in glob.glob(folder + "/*" + fileType):
+			
+			outputs.append(model_output.predict(create_input_rgbd(file).reshape((1, 200, 200, 4))))
+			
+			i += 1
+		
+		
+		n += 1
+		
+		print("Folder ", n, " of ", len(glob.glob(dir_train + '/*')), "with", i, "files")
 
-print(len(outputs))
-
-
-outputs = np.asarray(outputs)
-outputs = outputs.reshape((-1,128))
-outputs.shape
-
+	print(len(outputs))
 
 
+	outputs = np.asarray(outputs)
+	outputs = outputs.reshape((-1,128))
+	outputs.shape
 
 
-X_embedded = TSNE(2).fit_transform(outputs)
-X_embedded.shape
+	X_embedded = TSNE(2).fit_transform(outputs)
+	X_embedded.shape
 
-X_PCA = PCA(3).fit_transform(outputs)
-print(X_PCA.shape)
+	X_PCA = PCA(3).fit_transform(outputs)
+	print(X_PCA.shape)
 
-#X_embedded = TSNE(2).fit_transform(X_PCA)
-#print(X_embedded.shape)
+	#X_embedded = TSNE(2).fit_transform(X_PCA)
+	#print(X_embedded.shape)
 
-color = 0
-for i in range(len((X_embedded))):
-	
-	el = X_embedded[i]
-	
-	if i % 51 == 0 and not i == 0:
-		color += 1
-		color = color % 10
-	
-	plt.scatter(el[0], el[1], color = "C" + str(color))
+	color = 0
+	for i in range(len((X_embedded))):
+		
+		el = X_embedded[i]
+		
+		if i % 51 == 0 and not i == 0:
+			color += 1
+			color = color % 10
+		
+		plt.scatter(el[0], el[1], color = "C" + str(color))
 
-plt.show()
+	plt.show()
+
+
+
+	return model_final
+
 
 
 '''
 	Distância entre duas imagens RGBD arbitrárias
 '''
 
-
 def showResult(face, test):
 
-	face = Image.open(face)
+	face = cv2.cvtColor(cv2.imread(face), cv2.COLOR_BGR2RGB)
 
-	testFaces = list(map(Image.open, [face[0] for face in test]))
+	testFaces = list(map(lambda path : cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2RGB), [face[0] for face in test]))
 
-	plt.figure(figsize=(12, 10))
+	plt.figure(figsize = (12, 10))
+
 	for i in range(len(testFaces)):
-		widths = [face.size[0], testFaces[i].size[0]]
-		heights = [face.size[1], testFaces[i].size[1]]
 
-		newImg = Image.new('RGB', (sum(widths), max(heights)))
-		newImg.paste(face, (0, 0))
-		newImg.paste(testFaces[i], (face.size[0], 0))
+		newImg = np.concatenate((face, testFaces[i]), axis=1)
 		
-		if (len(test) != 1):
-			plt.subplot(math.ceil((len(test) + 1) / 5), 5, i + 1)
-		plt.subplots_adjust(hspace=0.75)
+		squareDimension = math.ceil(math.sqrt(len(testFaces)))
+		plt.subplot(squareDimension, squareDimension, i + 1)
 		plt.imshow(newImg)
 		plt.title(test[i][1])
 		plt.axis('off')
@@ -611,7 +464,7 @@ def showResult(face, test):
 
 
 
-def validation():
+def validation(model):
 
 	people = glob.glob(dir_train + "/*") # Pega todas as pastas de treinamento
 
@@ -628,7 +481,7 @@ def validation():
 		faceTest = np.random.choice(glob.glob(person + "/*" + fileType))
 
 
-	showResult(face, [(faceTest, model_final.predict([create_input_rgbd(face).reshape((1, 200, 200, 4)), create_input_rgbd(faceTest).reshape((1, 200, 200, 4))]))])
+	showResult(face, [(faceTest, model.predict([create_input_rgbd(face).reshape((1, 200, 200, 4)), create_input_rgbd(faceTest).reshape((1, 200, 200, 4))]))])
 
 	
 	# Testa com as imagens Incorretas 
@@ -636,13 +489,13 @@ def validation():
 	tests = []
 	for person in people: # Faz o teste com todas as outras pessoas
 		faceTest = np.random.choice(glob.glob(person + "/*" + fileType))
-		tests.append((faceTest, model_final.predict([create_input_rgbd(face).reshape((1, 200, 200, 4)), create_input_rgbd(faceTest).reshape((1, 200, 200, 4))])))
+		tests.append((faceTest, model.predict([create_input_rgbd(face).reshape((1, 200, 200, 4)), create_input_rgbd(faceTest).reshape((1, 200, 200, 4))])))
 
 	showResult(face, tests)
 
 
 
-def test():
+def test(model):
 
 	for person in glob.glob(dir_val + "/*"):
 
@@ -651,36 +504,43 @@ def test():
 		tests = []
 		for person in glob.glob(dir_train + "/*"): # Testa com as imagens de treinamento 
 			faceTest = np.random.choice(glob.glob(person + "/*" + fileType))
-			tests.append((faceTest, model_final.predict([create_input_rgbd(face).reshape((1, 200, 200, 4)), create_input_rgbd(faceTest).reshape((1, 200, 200, 4))])))
+			tests.append((faceTest, model.predict([create_input_rgbd(face).reshape((1, 200, 200, 4)), create_input_rgbd(faceTest).reshape((1, 200, 200, 4))])))
 
 		showResult(face, tests)
 
-'''
-load()
-preProcessing()
-# 2/3 dos dados para treinamento e 1/3 para validação (tentar usar validação cruzada)
-training()
-'''
-validation()
-test()
+
 
 '''
-weights = 'pesi.h5'
-if os.path.exists(dir_model + '/' + weights):
-	if input('Você deseja utilizar um modelo de pesos salvo [Y/N]: ').upper() == 'Y':
+Fluxo do algoritmo
+'''
+
+# modelFile = 'model.h5'
+
+# model = '';
+# if os.path.exists(dir_model + '/' + modelFile) and input('Você deseja utilizar um modelo salvo? [Y/N]: ').upper() == 'Y':
+	# model = load_model(dir_model + '/' + modelFile)
+
+# else:
+
+	model = siameseNetworkSqueezeNet({
+		'compile' : {
+			'optimizer'	: Adam(lr = 0.001),	# SGD, RMSprop, Adagrad, Adadelta, Adamax, Nadam
+			# 'optimizer'	: SGD(lr = 0.001, momentum = 0.9), # pode ser usado no lugar do adam
+			'loss'		: contrastive_loss	# absolute_difference, add_loss, compute_weighted_loss, cosine_distance, get_losses, get_regularization_loss, get_regularization_losses, get_total_loss, hinge_loss, huber_loss, log_loss, mean_pairwise_squared_error, mean_squared_error, sigmoid_cross_entropy, softmax_cross_entropy, sparse_softmax_cross_entropy
+		},
+		'fit' : {
+			'steps_per_epoch'	: 30,
+			'epochs'			: 50,
+			'validation_steps'	: 20
+		}
+	})
+
+	# if not os.path.isdir(dir_model):
+		# os.mkdir(dir_model)
 	
-		model_final.load_weights(dir_model + '/' + weights)
-	
-	else:
+	# if (not os.path.exists(dir_model + '/' + modelFile)) or (os.path.exists(dir_model + '/' + modelFile) and input('Você deseja substituir o modelo salvo existente? [Y/N]: ').upper() == 'Y'):
+		# model.save(dir_model + '/' + modelFile)
 
-		# aqui ficará o fluxo do programa
-		# Input
-		# pré-processamento
-		# treinar 75%
-		# validação 25%
-		# Show
 
-		if os.path.isdir(dir_model):
-			os.mkdir(dir_model)
-		model_final.save(dir_model + '/' + weights)
-'''
+validation(model)
+test(model)
