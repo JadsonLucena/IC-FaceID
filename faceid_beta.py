@@ -79,7 +79,7 @@ def rgbFromDecimal(rgb):
 	return (round((rgb[0] / 255) * 256) + (256*rgb[1]) + (256*256*rgb[2])) / (256*256*256) # Nomalizado
 
 
-def margin(coordinates, shape, margin = 100):
+def margin(coordinates, shape, margin = 50):
 
 	coordinates[0] = coordinates[0] - margin
 	if (coordinates[0] < 0):
