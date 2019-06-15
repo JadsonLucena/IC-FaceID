@@ -79,6 +79,28 @@ def rgbFromDecimal(rgb):
 	return (round((rgb[0] / 255) * 256) + (256*rgb[1]) + (256*256*rgb[2])) / (256*256*256) # Nomalizado
 
 
+def margin(coordinates, shape, margin = 100):
+
+	coordinates[0] = coordinates[0] - margin
+	if (coordinates[0] < 0):
+		coordinates[0] = 0
+		
+	coordinates[1] = coordinates[1] - margin
+	if (coordinates[1] < 0):
+		coordinates[1] = 0
+		
+	coordinates[2] = coordinates[2] + 2 * margin
+	if (coordinates[2] > shape[0]):
+		coordinates[2] = shape[0]
+
+	coordinates[3] = coordinates[3] + 2 * margin
+	if (coordinates[3] > shape[1]):
+		coordinates[3] = shape[1]
+
+	return coordinates
+
+
+
 def create_input_rgbd(filePath):
 
 	img = cv2.imread(filePath)
@@ -86,12 +108,11 @@ def create_input_rgbd(filePath):
 	depth = cv2.imread(filePath.replace(fileType, depthFileType))
 	depth = cv2.resize(depth, (img.shape[1], img.shape[0]))
 
-	margin = 50
 
-	facialCoordinates = (0 + margin, 0 + margin, img.shape[1] - margin, img.shape[0] - margin);
+	facialCoordinates = (0, 0, img.shape[1], img.shape[0]);
 	try:
 	
-		facialCoordinates = faceCascade.detectMultiScale(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), scaleFactor = 1.09, minNeighbors = 1, minSize=(120, 120), flags = cv2.CASCADE_SCALE_IMAGE)[0]
+		facialCoordinates = margin(faceCascade.detectMultiScale(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), scaleFactor = 1.09, minNeighbors = 1, minSize=(120, 120), flags = cv2.CASCADE_SCALE_IMAGE)[0], img.shape)
 	
 	except:
 
@@ -101,8 +122,8 @@ def create_input_rgbd(filePath):
 	img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 	depth = cv2.cvtColor(depth, cv2.COLOR_BGR2RGB)
 
-	img = img[facialCoordinates[1] - margin : facialCoordinates[1] + facialCoordinates[3] + margin, facialCoordinates[0] - margin : facialCoordinates[0] + facialCoordinates[2] + margin]
-	depth = depth[facialCoordinates[1] - margin : facialCoordinates[1] + facialCoordinates[3] + margin, facialCoordinates[0] - margin : facialCoordinates[0] + facialCoordinates[2] + margin]
+	img = img[facialCoordinates[1] : facialCoordinates[1] + facialCoordinates[3], facialCoordinates[0] : facialCoordinates[0] + facialCoordinates[2]]
+	depth = depth[facialCoordinates[1] : facialCoordinates[1] + facialCoordinates[3], facialCoordinates[0] : facialCoordinates[0] + facialCoordinates[2]]
 
 
 	img = cv2.resize(img, (200, 200))
@@ -522,18 +543,18 @@ Fluxo do algoritmo
 
 # else:
 
-	model = siameseNetworkSqueezeNet({
-		'compile' : {
-			'optimizer'	: Adam(lr = 0.001),	# SGD, RMSprop, Adagrad, Adadelta, Adamax, Nadam
-			# 'optimizer'	: SGD(lr = 0.001, momentum = 0.9), # pode ser usado no lugar do adam
-			'loss'		: contrastive_loss	# absolute_difference, add_loss, compute_weighted_loss, cosine_distance, get_losses, get_regularization_loss, get_regularization_losses, get_total_loss, hinge_loss, huber_loss, log_loss, mean_pairwise_squared_error, mean_squared_error, sigmoid_cross_entropy, softmax_cross_entropy, sparse_softmax_cross_entropy
-		},
-		'fit' : {
-			'steps_per_epoch'	: 30,
-			'epochs'			: 50,
-			'validation_steps'	: 20
-		}
-	})
+model = siameseNetworkSqueezeNet({
+	'compile' : {
+		'optimizer'	: Adam(lr = 0.001),	# SGD, RMSprop, Adagrad, Adadelta, Adamax, Nadam
+		# 'optimizer'	: SGD(lr = 0.001, momentum = 0.9), # pode ser usado no lugar do adam
+		'loss'		: contrastive_loss	# absolute_difference, add_loss, compute_weighted_loss, cosine_distance, get_losses, get_regularization_loss, get_regularization_losses, get_total_loss, hinge_loss, huber_loss, log_loss, mean_pairwise_squared_error, mean_squared_error, sigmoid_cross_entropy, softmax_cross_entropy, sparse_softmax_cross_entropy
+	},
+	'fit' : {
+		'steps_per_epoch'	: 30,
+		'epochs'			: 50,
+		'validation_steps'	: 20
+	}
+})
 
 	# if not os.path.isdir(dir_model):
 		# os.mkdir(dir_model)
