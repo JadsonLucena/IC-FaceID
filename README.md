@@ -20,3 +20,7 @@ Onde se resume em uma rede convolucional siamêsa baseada na arquitetura Squeeze
 - pip3 install -r requirements.txt
 
 - python3 faceId.py
+
+https://youtu.be/KtJKriB3Dek?si=sOkVtqG6pv4FC9qt
+
+Coordenador: [Cleber Zanchettin](http://lattes.cnpq.br/1244195230407619)
